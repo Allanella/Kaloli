@@ -1,0 +1,815 @@
+## PROJECT: ST. KALOOLI LWANGA SS MULAJJE — OFFICIAL SCHOOL WEBSITE
+
+Build a beautiful, modern, professional and highly responsive website for **St. Kalooli Lwanga Secondary School Mulajje**, a Catholic-founded, government-aided secondary school located in **Mulajje Parish, Bamunanika Sub-county, Luweero District, Uganda**.
+
+The website should feel like a **premium Ugandan secondary school website**: trustworthy, welcoming, academic, disciplined, modern and rooted in Christian values.
+
+The final result should be impressive enough to present directly to the school administration.
+
+---
+
+# 1. IMPORTANT DEVELOPMENT REQUIREMENTS
+
+### DO NOT BUILD EVERYTHING IN ONE FILE.
+
+Use a clean, maintainable and scalable architecture.
+
+Separate:
+
+* Pages
+* Components
+* Layouts
+* Data/content
+* Images
+* Icons
+* Styles
+* Reusable sections
+
+Do not hard-code the same school information repeatedly throughout multiple components.
+
+Create reusable components such as:
+
+* Navbar
+* Footer
+* HeroSection
+* SectionHeading
+* SchoolStats
+* PrincipalMessage
+* AboutPreview
+* HistoryTimeline
+* VisionMission
+* CoreValues
+* Objectives
+* LeadershipCard
+* NewsCard
+* GalleryGrid
+* CTASection
+* ContactSection
+* AdmissionCTA
+* ScrollToTop
+* MobileMenu
+
+If using Next.js, follow a clean Next.js App Router structure.
+
+---
+
+# 2. CONTENT MANAGEMENT / EASY MAINTENANCE
+
+The website must be extremely easy for a developer or future administrator to maintain.
+
+Create centralized content/data files, for example:
+
+```text
+src/
+├── app/
+├── components/
+│   ├── layout/
+│   ├── home/
+│   ├── about/
+│   ├── academics/
+│   ├── admissions/
+│   ├── leadership/
+│   ├── gallery/
+│   └── contact/
+├── data/
+│   ├── school.ts
+│   ├── leadership.ts
+│   ├── gallery.ts
+│   ├── news.ts
+│   └── academics.ts
+├── public/
+│   ├── images/
+│   ├── gallery/
+│   ├── leadership/
+│   └── logo/
+└── ...
+```
+
+School information such as the name, vision, mission, motto, contacts, leadership and history should be stored centrally.
+
+For example:
+
+```ts
+export const school = {
+  name: "St. Kalooli Lwanga SS Mulajje",
+  location: "Mulajje, Luweero District, Uganda",
+  motto: "Only the Best is Good Enough",
+  vision: "...",
+  mission: "...",
+};
+```
+
+This makes future editing much easier.
+
+---
+
+# 3. DESIGN DIRECTION
+
+Create a sophisticated visual identity inspired by:
+
+* Catholic education
+* Academic excellence
+* Discipline
+* Faith
+* Leadership
+* Community
+* Youth development
+* Ugandan school environment
+
+The design should NOT look like a generic template.
+
+Use:
+
+* Elegant typography
+* Strong visual hierarchy
+* Spacious layouts
+* Beautiful cards
+* Subtle shadows
+* Rounded corners where appropriate
+* Smooth animations
+* Clean sections
+* High-quality photography
+* Professional CTA buttons
+* Subtle Catholic-inspired visual elements without making the design overwhelming
+
+Use a refined school color palette.
+
+Suggested direction:
+
+* Deep burgundy / maroon
+* Navy or deep blue
+* Warm gold accents
+* White / off-white backgrounds
+* Dark charcoal text
+
+Keep the colors consistent throughout the website.
+
+Do not overuse gradients.
+
+---
+
+# 4. HOME PAGE
+
+Create an impressive homepage.
+
+## HERO SECTION
+
+Large full-width hero image showing students/school environment.
+
+If the actual school images are not available, create a **clearly identifiable image placeholder** with the correct dimensions and a comment indicating where the real image should be inserted.
+
+Hero content:
+
+### St. Kalooli Lwanga SS Mulajje
+
+**"Only the Best is Good Enough."**
+
+Supporting text:
+
+> A Catholic-founded, government-aided secondary school committed to nurturing educated, self-reliant, patriotic and God-fearing citizens.
+
+Buttons:
+
+**Explore Our School**
+
+**Admissions**
+
+Include subtle entrance animations.
+
+Add a small badge such as:
+
+**Catholic Founded • Government Aided • Since 1986**
+
+---
+
+# 5. SCHOOL INTRODUCTION
+
+Create an attractive introduction section immediately after the hero.
+
+Heading:
+
+### Welcome to St. Kalooli Lwanga SS Mulajje
+
+Explain that the school was founded in 1986 and is committed to academic excellence, character formation, self-reliance and holistic development.
+
+Use a large school image on one side and text on the other.
+
+Include:
+
+**Read Our Story →**
+
+---
+
+# 6. QUICK SCHOOL HIGHLIGHTS
+
+Create visually appealing statistic cards.
+
+Possible highlights:
+
+* **1986** — Year Founded
+* **2011** — Government Aided
+* **Catholic Founded** — School Heritage
+* **Luweero** — School Location
+
+Use icons and subtle animations.
+
+Do not invent student numbers, examination results or achievements that were not provided.
+
+---
+
+# 7. VISION, MISSION & VALUES
+
+Create a beautiful three-part section.
+
+### OUR VISION
+
+> To produce a well Educated, Self Reliant and Patriotic Citizen.
+
+### OUR MISSION
+
+> To promote education and Development of the Youth in Partnership with the community.
+
+### OUR MOTTO
+
+> Only the Best is Good Enough.
+
+Use elegant icons and visually distinct cards.
+
+---
+
+# 8. CORE VALUES
+
+Display the school's core values as individual visual cards:
+
+* Devout
+* Responsibility
+* Ethical
+* Admirable
+* Diligent
+* Excellence
+* Dependable
+
+Use icons.
+
+Animate cards gently when they enter the viewport.
+
+---
+
+# 9. SCHOOL OBJECTIVES
+
+Create a professional section titled:
+
+### Our Objectives
+
+Display the five objectives in numbered cards:
+
+1. To be an outstanding academic institution.
+2. To help students appreciate the value of hard work for self reliance.
+3. To attract a professional and committed workforce.
+4. To strengthen co-curricular activities for better health and skills development of students.
+5. To produce citizens who are God fearing and tolerate the existence of one another.
+
+---
+
+# 10. ABOUT THE SCHOOL
+
+Create a dedicated `/about` page.
+
+Include:
+
+### Our Story
+
+St. Kalooli Lwanga SS Mulajje is a Catholic-founded secondary school located in Mulajje Parish, Kasana Luweero Diocese. It has been a government-aided secondary school since 2011.
+
+The school was started in **1986** by **Rev. Sr. Babirye Domitila**, who was Sr. Mukulu of Mulajje Convent at the time.
+
+The idea of starting the school was taken forward by **Rev. Fr. Matthias Ssimbwa**, who was the Parish Priest at that time.
+
+---
+
+# 11. SCHOOL HISTORY TIMELINE
+
+Create an elegant visual timeline.
+
+### 1986
+
+School founded.
+
+### Early Leadership
+
+Mr. Nsubuga Benedicto (RIP) became the first Headteacher.
+
+Then show the subsequent Headteachers:
+
+* Mr. Innocent Twinomugisha
+* Mr. Hertega Ladis (RIP)
+* Mr. Kivvumbi
+* Mr. Musoke Joseph
+* Mr. Kawuma Constantine David
+* Mrs. Noeline Nabasinga Ntanda
+
+Also create a separate timeline/list for former Deputy Headteachers:
+
+* Mr. Kateregga Benedict
+* Mrs. Samanya Muluuta
+* Mr. Lwegaba Emmanuel
+* Mr. Ssewanyana Mathias
+
+Make this section visually impressive rather than displaying it as a plain paragraph.
+
+---
+
+# 12. CURRENT SCHOOL LEADERSHIP
+
+Create a dedicated leadership section.
+
+### Headteacher
+
+**Mr. Lwegaba Emmanuel**
+
+### Deputy Headteacher
+
+**Mr. Ssewanyana Mathias**
+
+### Deputy Headteacher
+
+**Mr. Kateregga Benedict**
+
+### Director of Studies
+
+**Mr. Mulondo Allan**
+
+Each leader should have a professional profile card.
+
+Use portrait placeholders if actual photos are unavailable.
+
+Example:
+
+```text
+[PHOTO PLACEHOLDER]
+
+Mr. Lwegaba Emmanuel
+Headteacher
+```
+
+Do not generate fake portraits and present them as real people.
+
+---
+
+# 13. ACADEMICS PAGE
+
+Create an `/academics` page.
+
+Include sections for:
+
+* Academic excellence
+* Teaching and learning
+* Student development
+* Study environment
+* Co-curricular activities
+* Discipline and character development
+
+Do not invent examination statistics or academic rankings.
+
+If information is unavailable, use editable placeholder content.
+
+---
+
+# 14. ADMISSIONS PAGE
+
+Create an attractive admissions page.
+
+Include:
+
+### Begin Your Journey With Us
+
+Explain that prospective students and parents can contact the school for current admission information.
+
+Create CTA buttons:
+
+**Contact the School**
+
+**Call Us**
+
+**WhatsApp Us**
+
+Do not invent admission fees, requirements or application deadlines.
+
+Create editable sections where those details can later be added.
+
+---
+
+# 15. GALLERY PAGE
+
+Create a beautiful `/gallery` page.
+
+This is VERY IMPORTANT.
+
+The client wants the school to visually showcase itself.
+
+Create categories such as:
+
+### School Life
+
+### Students
+
+### Academics
+
+### Campus
+
+### Events
+
+### Sports & Co-Curricular Activities
+
+Use a responsive masonry/grid gallery.
+
+Include:
+
+* Lightbox
+* Image preview
+* Smooth transitions
+* Lazy loading
+* Responsive images
+* Captions where available
+
+The supplied school photographs should be used where they are actually available.
+
+If an image cannot be accessed, DO NOT invent it.
+
+Instead use:
+
+```text
+[School Image Placeholder]
+```
+
+with a professional placeholder design.
+
+Make it obvious in the code where the real image should be inserted.
+
+---
+
+# 16. IMAGE PLACEHOLDER SYSTEM
+
+Create reusable image placeholder support.
+
+For example:
+
+```tsx
+<SchoolImage
+  src="/images/gallery/campus-01.jpg"
+  alt="St. Kalooli Lwanga SS Mulajje campus"
+/>
+```
+
+If the image doesn't exist, gracefully display a placeholder instead of breaking the website.
+
+This will make it easy to add the client's real photos later.
+
+---
+
+# 17. NEWS & ANNOUNCEMENTS
+
+Create a `/news` page and reusable NewsCard component.
+
+Initially use placeholder/sample entries clearly marked as editable.
+
+Possible categories:
+
+* School News
+* Academic Updates
+* Events
+* Announcements
+* Student Activities
+
+Do not present invented events as real school events.
+
+Create the data in:
+
+```text
+src/data/news.ts
+```
+
+so future updates require editing one file rather than the page.
+
+---
+
+# 18. CONTACT PAGE
+
+Create a professional contact page.
+
+### School Email
+
+[skalssm.2013@gmail.com](mailto:skalssm.2013@gmail.com)
+
+### WhatsApp / Phone
+
+0779 268 469
+
+### Alternative Contact
+
+0705 400 493
+
+### Location
+
+St. Kalooli Lwanga SS Mulajje
+Mulajje Parish
+Bamunanika Sub-county
+Luweero District
+Uganda
+
+Add:
+
+* Google Maps section placeholder
+* Contact form
+* WhatsApp CTA
+* Email CTA
+* Call CTA
+
+Do not expose unnecessary technical information.
+
+---
+
+# 19. FOOTER
+
+Create a rich professional footer.
+
+Include:
+
+### St. Kalooli Lwanga SS Mulajje
+
+**Only the Best is Good Enough.**
+
+Links:
+
+* Home
+* About
+* Academics
+* Admissions
+* Leadership
+* Gallery
+* News
+* Contact
+
+Also include:
+
+* Phone
+* Email
+* Location
+* WhatsApp
+
+Add:
+
+**© 2026 St. Kalooli Lwanga SS Mulajje. All Rights Reserved.**
+
+Also include a small developer credit area that can be edited later.
+
+---
+
+# 20. WHATSAPP INTEGRATION
+
+Create a floating WhatsApp button.
+
+Use the school WhatsApp number:
+
+**0779268469**
+
+The WhatsApp link should open a pre-filled message such as:
+
+> Hello St. Kalooli Lwanga SS Mulajje, I would like to inquire about the school.
+
+Make the button mobile-friendly.
+
+---
+
+# 21. RESPONSIVENESS
+
+The website must look excellent on:
+
+* Mobile phones
+* Tablets
+* Laptops
+* Desktop monitors
+
+Pay special attention to mobile navigation.
+
+Create a beautiful animated mobile menu.
+
+Avoid horizontal scrolling.
+
+---
+
+# 22. ANIMATIONS
+
+Use tasteful animations only.
+
+Examples:
+
+* Fade-up sections
+* Image reveal
+* Card hover
+* Smooth scrolling
+* Hero entrance
+* Timeline animations
+* Button hover effects
+
+Do NOT over-animate the website.
+
+The website should feel professional rather than like a gaming website.
+
+Respect `prefers-reduced-motion`.
+
+---
+
+# 23. ACCESSIBILITY
+
+Follow good accessibility practices:
+
+* Semantic HTML
+* Proper headings
+* Alt text
+* Keyboard navigation
+* Accessible buttons
+* Good color contrast
+* Focus states
+* ARIA labels where necessary
+
+---
+
+# 24. SEO
+
+Implement proper SEO.
+
+Use:
+
+### Title
+
+St. Kalooli Lwanga SS Mulajje | Only the Best is Good Enough
+
+### Description
+
+St. Kalooli Lwanga SS Mulajje is a Catholic-founded, government-aided secondary school in Mulajje Parish, Luweero District, Uganda, committed to academic excellence, self-reliance, character and holistic student development.
+
+Add:
+
+* Open Graph metadata
+* Twitter/X metadata where appropriate
+* Favicon
+* School logo support
+* Sitemap
+* Robots configuration
+* Structured data where appropriate
+
+---
+
+# 25. PERFORMANCE
+
+Optimize the website for speed.
+
+Use:
+
+* Optimized images
+* Lazy loading
+* Responsive image sizes
+* Proper font loading
+* Code splitting where appropriate
+* Minimal unnecessary JavaScript
+* Reusable components
+* Clean imports
+
+The site should perform well on slower Ugandan mobile networks.
+
+---
+
+# 26. SECURITY & CODE QUALITY
+
+Do not expose secrets.
+
+Do not put API keys in frontend code.
+
+Use environment variables when necessary.
+
+Keep the project organized and production-ready.
+
+Avoid unnecessary dependencies.
+
+Use TypeScript properly if the project is TypeScript-based.
+
+Avoid `any` unless genuinely necessary.
+
+---
+
+# 27. CLIENT-FRIENDLY CONTENT STRUCTURE
+
+Make it very easy for another developer to update:
+
+* School name
+* Logo
+* Hero image
+* Gallery images
+* Leadership
+* Phone numbers
+* Email
+* Vision
+* Mission
+* Motto
+* Core values
+* News
+* Events
+
+without searching through dozens of components.
+
+Centralize editable content.
+
+---
+
+# 28. IMPORTANT: DO NOT INVENT INFORMATION
+
+Only use the information supplied about St. Kalooli Lwanga SS Mulajje.
+
+Do NOT invent:
+
+* Student population
+* Fees
+* UNEB results
+* School rankings
+* Boarding status
+* Subject combinations
+* Admission requirements
+* Staff numbers
+* Facilities
+* Awards
+* Clubs
+* Sports achievements
+* Historical facts
+* Testimonials
+
+If information is missing, create a tasteful editable placeholder.
+
+---
+
+# 29. VISUAL IMAGE REQUIREMENT
+
+The website should contain MANY visual sections.
+
+Use school photographs supplied by the client where available.
+
+Suggested image locations:
+
+1. Hero
+2. About section
+3. School history
+4. Leadership
+5. Academic section
+6. Student life
+7. Campus
+8. Gallery
+9. Co-curricular activities
+10. Admissions CTA
+
+If actual images are unavailable, leave beautiful placeholders with comments such as:
+
+```text
+// TODO: Replace with official school campus photograph
+```
+
+Do not use random stock photos and imply they are photos of the school.
+
+---
+
+# 30. FINAL QUALITY STANDARD
+
+The final website should feel like a professionally designed institutional website, not a student project.
+
+It should communicate:
+
+**FAITH + EDUCATION + DISCIPLINE + EXCELLENCE + COMMUNITY**
+
+The homepage should immediately make a parent, student or visitor understand:
+
+1. Who the school is
+2. Where it is located
+3. Its Catholic heritage
+4. Its educational purpose
+5. Its vision and mission
+6. Its leadership
+7. How to contact the school
+8. How to learn more about admissions
+
+Make the design visually impressive while keeping it simple, fast and easy to maintain.
+
+Before finishing, check every page for:
+
+* Responsive layout
+* Broken images
+* Missing links
+* Accessibility
+* Mobile navigation
+* SEO
+* Typography consistency
+* Spacing consistency
+* Console errors
+* TypeScript errors
+* Missing alt text
+* Placeholder content that should be editable
+
+The final result should be **clean, elegant, warm, trustworthy, Catholic, academic and distinctly Ugandan**, while remaining easy for a developer to maintain and expand.
