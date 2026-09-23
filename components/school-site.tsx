@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { 
+import {
   GraduationCap, BookOpen, Award, Users, ArrowRight, Phone, Mail, MapPin, Sparkles,
   ChevronRight, Heart, ShieldCheck, Music, Menu, X, HandHeart, Laptop, Globe, Trophy,
   Palette, Flag, Star, BookMarked, CheckCircle2, Languages, FlaskConical, Calculator,
-  User, Calendar, Home, FileText, Send, Check
+  User, Calendar, Home, FileText, Send, Check, Cross, Quote, Flame, Crown
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -25,7 +25,7 @@ export default function LandingPage() {
   const badgeSource = '/images/school-badge.png'
   const fallbackBadge = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-kv7j1kFuiliMHehVyPm10Xb3zfcVzL.png'
 
-  // Background slideshow — only 2 images for faster loading
+  // Background slideshow — 2 images for faster loading
   const backgroundSlides = [
     '/images/background.jpg',
     '/images/back1.jpg',
@@ -38,7 +38,7 @@ export default function LandingPage() {
     return () => clearInterval(interval)
   }, [backgroundSlides.length])
 
-  // Preload all background images once on mount for instant switching
+  // Preload background images once on mount
   useEffect(() => {
     backgroundSlides.forEach((src) => {
       const img = new window.Image()
@@ -114,7 +114,7 @@ export default function LandingPage() {
     { name: 'ICT Club', icon: Laptop, desc: 'Digital literacy and coding skills' },
   ]
 
-  // ===== LEADERSHIP — 5 MEMBERS =====
+  // ===== LEADERSHIP — 5 core members + extended team =====
   const leadership = [
     { name: 'Madam Noe', role: 'Headteacher', image: '/images/HM NOE.jpg' },
     { name: 'Mr. Lwegaba Emmanuel', role: 'Deputy Headteacher', image: '/images/LWEGABA EMMANUEL1.JPG.jpeg' },
@@ -133,7 +133,7 @@ export default function LandingPage() {
 
   const coreValues = ['Devout', 'Responsibility', 'Ethical', 'Admirable', 'Diligent', 'Excellence', 'Dependable']
 
-  // ===== GALLERY — REPLACED campus items with new WhatsApp images =====
+  // ===== GALLERY =====
   const galleryPreview = [
     // MDD Series
     { src: '/images/MDD.jpg', title: 'MDD Festival', category: 'mdd', description: 'Annual Music, Dance & Drama festival' },
@@ -152,14 +152,25 @@ export default function LandingPage() {
     { src: '/images/MDD13.jpg', title: 'Drama Performance', category: 'mdd', description: 'Drama presentation' },
     { src: '/images/MDD14.jpg', title: 'Cultural Dance', category: 'mdd', description: 'Cultural dance' },
     { src: '/images/MDD15.jpg', title: 'Finale', category: 'mdd', description: 'Grand finale' },
-    // New WhatsApp images (Sept 21) — replacing the campus items
+    // Sept 21 WhatsApp images
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.29 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.30 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.31 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.32 PM (1).jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.32 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.33 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    // Older WhatsApp images
+    // Sept 23 WhatsApp images
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.01.14 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.01.44 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.01.48 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.16 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.17 PM (1).jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.17 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.21 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.22 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.30 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.32 PM (1).jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
+    // Sept 19 WhatsApp images
     { src: '/images/WhatsApp Image 2026-09-19 at 9.40.28 AM.jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-19 at 9.40.29 AM (1).jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-19 at 9.40.29 AM (2).jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
@@ -175,6 +186,7 @@ export default function LandingPage() {
 
   const navLinks = [
     { name: 'Home', href: '/' },
+    { name: 'Saint', href: '/saint-of-the-day' },
     { name: 'About', href: '/about' },
     { name: 'Academics', href: '/academics' },
     { name: 'Admissions', href: '/admissions' },
@@ -200,8 +212,8 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen relative text-slate-800 font-sans selection:bg-[#bd703f] selection:text-white">
-      
-      {/* ============ FIXED FULL-PAGE BACKGROUND SLIDESHOW (FADED) ============ */}
+
+      {/* ============ FIXED FULL-PAGE BACKGROUND SLIDESHOW ============ */}
       <div className="fixed inset-0 -z-10 bg-[#0d2338]">
         {backgroundSlides.map((bg, index) => (
           <img
@@ -266,7 +278,7 @@ export default function LandingPage() {
               </div>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-5">
               {navLinks.map((link) => (
                 <Link key={link.name} href={link.href}
                   className="text-sm font-medium text-slate-200 hover:text-[#e7bd5f] transition-colors relative group">
@@ -597,7 +609,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ============ LEADERSHIP — 5 MEMBERS ============ */}
+        {/* ============ LEADERSHIP — 5 CORE MEMBERS ============ */}
         <section className="max-w-7xl mx-auto px-6 py-16">
           <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
             <p className="text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">Our Leadership</p>
@@ -609,12 +621,12 @@ export default function LandingPage() {
             {leadership.map((person, i) => (
               <div key={i} className="group bg-white/95 backdrop-blur-md rounded-2xl overflow-hidden border border-white/40 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-[#142f4a] to-[#1a3a5c]">
-                  <img 
-                    src={person.image} 
-                    alt={person.name} 
-                    className="size-full object-cover object-top transition duration-500 group-hover:scale-105" 
+                  <img
+                    src={person.image}
+                    alt={person.name}
+                    className="size-full object-cover object-top transition duration-500 group-hover:scale-105"
                     loading="lazy"
-                    onError={(e) => { e.currentTarget.style.opacity = '0' }} 
+                    onError={(e) => { e.currentTarget.style.opacity = '0' }}
                   />
                 </div>
                 <div className="p-3 lg:p-4 text-center">
@@ -628,6 +640,93 @@ export default function LandingPage() {
             <Link href="/leadership" className="inline-flex items-center gap-2 font-semibold text-[#e7bd5f] hover:text-white transition-colors group drop-shadow">
               Meet the full team <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
+          </div>
+        </section>
+
+        {/* ============ SAINT OF THE DAY ============ */}
+        <section className="max-w-7xl mx-auto px-6 py-16">
+          <div className="rounded-3xl bg-gradient-to-br from-[#142f4a]/95 to-[#0d2338] backdrop-blur-md border border-[#e7bd5f]/30 shadow-2xl overflow-hidden">
+            <div className="grid lg:grid-cols-12 gap-0 items-stretch">
+
+              {/* Left — decorative + badge */}
+              <div className="lg:col-span-4 relative bg-gradient-to-br from-[#bd703f] to-[#142f4a] p-8 lg:p-10 flex flex-col justify-between overflow-hidden">
+                <div className="absolute -top-10 -right-10 size-48 rounded-full bg-[#e7bd5f]/20 blur-3xl" />
+                <div className="absolute -bottom-10 -left-10 size-48 rounded-full bg-[#bd703f]/20 blur-3xl" />
+
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-6">
+                    <Sparkles size={12} /> Saint of the Day
+                  </div>
+
+                  <div className="size-20 rounded-full bg-white/10 backdrop-blur-md border border-[#e7bd5f]/40 flex items-center justify-center mb-6">
+                    <Cross size={36} className="text-[#e7bd5f]" />
+                  </div>
+
+                  <h3 className="font-serif text-3xl font-bold text-white leading-tight">
+                    St. Kalooli<br />Lwanga
+                  </h3>
+                  <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">
+                    Uganda Martyr · Patron of Youth
+                  </p>
+                </div>
+
+                <div className="relative mt-8 space-y-2 text-xs text-white/70">
+                  <div className="flex items-center gap-2">
+                    <Calendar size={13} className="text-[#e7bd5f]" /> Feast Day: June 3
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Flame size={13} className="text-[#e7bd5f]" /> Martyred 1886 at Namugongo
+                  </div>
+                </div>
+              </div>
+
+              {/* Right — content */}
+              <div className="lg:col-span-8 p-8 lg:p-10 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Crown size={20} className="text-[#e7bd5f]" />
+                    <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#e7bd5f]">
+                      Our Patron Saint
+                    </p>
+                  </div>
+
+                  <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white leading-tight mb-5">
+                    Courageous Leader. Faithful Martyr. Friend of Christ.
+                  </h2>
+
+                  <p className="text-sm leading-7 text-white/75 mb-6">
+                    St. Kalooli Lwanga was the chief of the royal pages in the court of Kabaka Mwanga II
+                    of Buganda. He used his position to protect the young Christians and lead them in
+                    the way of faith. On June 3, 1886, he was burned alive at Namugongo with his
+                    companions because they refused to deny Jesus.
+                  </p>
+
+                  <div className="relative pl-6 border-l-2 border-[#e7bd5f]/50 mb-6">
+                    <Quote className="absolute -top-1 -left-2 text-[#e7bd5f]/40" size={16} />
+                    <p className="font-serif text-lg italic text-white">
+                      &ldquo;Be strong and stand firm in the faith.&rdquo;
+                    </p>
+                    <p className="text-xs text-[#e7bd5f] mt-1 tracking-wider">— St. Kalooli Lwanga</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 mt-4">
+                  <Link
+                    href="/saint-of-the-day"
+                    className="inline-flex items-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 text-sm font-semibold shadow-lg transition-all hover:-translate-y-0.5"
+                  >
+                    Read His Story <ArrowRight size={15} />
+                  </Link>
+                  <Link
+                    href="/saint-of-the-day#prayer"
+                    className="inline-flex items-center gap-2 border border-[#e7bd5f]/40 hover:bg-[#e7bd5f]/10 text-[#e7bd5f] rounded-full px-6 py-3 text-sm font-semibold backdrop-blur-sm transition-all hover:-translate-y-0.5"
+                  >
+                    <Cross size={15} /> Say the Prayer
+                  </Link>
+                </div>
+              </div>
+
+            </div>
           </div>
         </section>
 
@@ -961,6 +1060,7 @@ export default function LandingPage() {
             <div>
               <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Quick Links</h4>
               <ul className="space-y-2 text-xs">
+                <li><Link href="/saint-of-the-day" className="hover:text-white transition">Saint of the Day</Link></li>
                 <li><Link href="/about" className="hover:text-white transition">About Our School</Link></li>
                 <li><Link href="/academics" className="hover:text-white transition">Academics & Curriculum</Link></li>
                 <li><Link href="/gallery" className="hover:text-white transition">Photo Gallery</Link></li>
