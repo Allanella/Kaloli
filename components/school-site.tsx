@@ -6,7 +6,8 @@ import {
   GraduationCap, BookOpen, Award, Users, ArrowRight, Phone, Mail, MapPin, Sparkles,
   ChevronRight, Heart, ShieldCheck, Music, Menu, X, HandHeart, Laptop, Globe, Trophy,
   Palette, Flag, Star, BookMarked, CheckCircle2, Languages, FlaskConical, Calculator,
-  User, Calendar, Home, FileText, Send, Check, Cross, Quote, Flame, Crown
+  User, Calendar, Home, FileText, Send, Check, Cross, Quote, Flame, Crown,
+  HeartPulse, Download
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -16,16 +17,45 @@ export default function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [badgeLoaded, setBadgeLoaded] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
-  const [formData, setFormData] = useState({
-    studentName: '', dateOfBirth: '', gender: '', level: '', combination: '',
-    previousSchool: '', parentName: '', parentPhone: '', parentEmail: '',
-    address: '', boarding: '', message: ''
+  const [donorSubmitted, setDonorSubmitted] = useState(false)
+
+  // Admissions: O'Level vs A'Level
+  const [applicantType, setApplicantType] = useState<'olevel' | 'alevel'>('olevel')
+
+  // ============ O'LEVEL FORM STATE (S.1 from PLE) ============
+  const [olevelData, setOlevelData] = useState({
+    studentName: '', dateOfBirth: '', gender: '', religion: '',
+    pleIndex: '', pleYear: '',
+    englishAgg: '', mathAgg: '', sstAgg: '', scienceAgg: '',
+    health: '', favouriteSport: '', boarding: '',
+    fatherName: '', fatherContact: '', fatherWhatsapp: '', fatherNin: '',
+    fatherVillage: '', fatherParish: '', fatherSubcounty: '', fatherDistrict: '',
+    motherName: '', motherContact: '', motherWhatsapp: '', motherNin: '',
+    motherVillage: '', motherParish: '', motherSubcounty: '', motherDistrict: '',
+  })
+
+  // ============ A'LEVEL FORM STATE (S.5 from UCE) ============
+  const [alevelData, setAlevelData] = useState({
+    studentName: '', dateOfBirth: '', gender: '', religion: '',
+    formerSchool: '', uceIndex: '', lin: '',
+    english: '', math: '', biology: '', chemistry: '', physics: '',
+    history: '', cre: '', agriculture: '', geography: '', luganda: '',
+    kiswahili: '', fineArt: '', ict: '', chinese: '',
+    preferredCombination: '', preferredSport: '', coCurricular: '', health: '',
+    fatherName: '', fatherContact: '', fatherWhatsapp: '', fatherNin: '',
+    fatherVillage: '', fatherParish: '', fatherSubcounty: '', fatherCounty: '',
+    motherName: '', motherContact: '', motherWhatsapp: '', motherNin: '',
+    motherVillage: '', motherParish: '', motherSubcounty: '', motherDistrict: '',
+  })
+
+  // ============ DONOR FORM STATE ============
+  const [donorData, setDonorData] = useState({
+    donorName: '', donorContact: '', donorCountry: '', donorAddress: '', donorAmount: '', donorMessage: '',
   })
 
   const badgeSource = '/images/school-badge.png'
   const fallbackBadge = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-kv7j1kFuiliMHehVyPm10Xb3zfcVzL.png'
 
-  // Background slideshow — 2 images for faster loading
   const backgroundSlides = [
     '/images/background.jpg',
     '/images/back1.jpg',
@@ -38,7 +68,6 @@ export default function LandingPage() {
     return () => clearInterval(interval)
   }, [backgroundSlides.length])
 
-  // Preload background images once on mount
   useEffect(() => {
     backgroundSlides.forEach((src) => {
       const img = new window.Image()
@@ -46,56 +75,159 @@ export default function LandingPage() {
     })
   }, [])
 
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+  // ============ PLE CALCULATIONS ============
+  const calculatePleTotal = () => {
+    const nums = [olevelData.englishAgg, olevelData.mathAgg, olevelData.sstAgg, olevelData.scienceAgg]
+      .map(v => parseInt(v, 10))
+      .filter(n => !isNaN(n))
+    if (nums.length === 4) return nums.reduce((a, b) => a + b, 0)
+    return null
   }
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const calculateDivision = (total: number | null) => {
+    if (total === null) return ''
+    if (total >= 4 && total <= 12) return 'Division I'
+    if (total >= 13 && total <= 23) return 'Division II'
+    if (total >= 24 && total <= 29) return 'Division III'
+    if (total >= 30 && total <= 34) return 'Division IV'
+    return 'Division U'
+  }
+
+  // ============ FORM HANDLERS ============
+  const handleOlevelChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setOlevelData({ ...olevelData, [e.target.name]: e.target.value })
+  }
+
+  const handleAlevelChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setAlevelData({ ...alevelData, [e.target.name]: e.target.value })
+  }
+
+  const handleDonorChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setDonorData({ ...donorData, [e.target.name]: e.target.value })
+  }
+
+  const handleOlevelSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    const message = `*NEW ADMISSION APPLICATION*\n\n` +
-      `*Student Name:* ${formData.studentName}\n` +
-      `*Date of Birth:* ${formData.dateOfBirth}\n` +
-      `*Gender:* ${formData.gender}\n` +
-      `*Level Applying For:* ${formData.level}\n` +
-      `*Combination (A'Level):* ${formData.combination || 'N/A'}\n` +
-      `*Previous School:* ${formData.previousSchool}\n` +
-      `*Boarding/Day:* ${formData.boarding}\n\n` +
-      `*Parent/Guardian:* ${formData.parentName}\n` +
-      `*Parent Phone:* ${formData.parentPhone}\n` +
-      `*Parent Email:* ${formData.parentEmail || 'N/A'}\n` +
-      `*Address:* ${formData.address || 'N/A'}\n\n` +
-      `*Additional Info:* ${formData.message || 'None'}`
+    const total = calculatePleTotal()
+    const division = calculateDivision(total)
+
+    const message = `*NEW S.1 APPLICATION (O'LEVEL)*\n\n` +
+      `*Student:* ${olevelData.studentName}\n` +
+      `*DOB:* ${olevelData.dateOfBirth}\n` +
+      `*Gender:* ${olevelData.gender}\n` +
+      `*Religion:* ${olevelData.religion || 'N/A'}\n\n` +
+      `*PLE INDEX:* ${olevelData.pleIndex}\n` +
+      `*PLE YEAR:* ${olevelData.pleYear}\n` +
+      `*Aggregates:* Eng=${olevelData.englishAgg}, Math=${olevelData.mathAgg}, SST=${olevelData.sstAgg}, Sci=${olevelData.scienceAgg}\n` +
+      `*TOTAL AGGREGATE:* ${total ?? 'N/A'}\n` +
+      `*DIVISION:* ${division || 'N/A'}\n\n` +
+      `*Boarding/Day:* ${olevelData.boarding}\n` +
+      `*Health:* ${olevelData.health || 'None'}\n` +
+      `*Sport:* ${olevelData.favouriteSport || 'N/A'}\n\n` +
+      `*--- FATHER ---*\n` +
+      `*Name:* ${olevelData.fatherName}\n` +
+      `*Contact:* ${olevelData.fatherContact}\n` +
+      `*WhatsApp:* ${olevelData.fatherWhatsapp || 'N/A'}\n` +
+      `*NIN:* ${olevelData.fatherNin || 'N/A'}\n` +
+      `*Village:* ${olevelData.fatherVillage || 'N/A'}\n` +
+      `*Parish:* ${olevelData.fatherParish || 'N/A'}\n` +
+      `*Subcounty:* ${olevelData.fatherSubcounty || 'N/A'}\n` +
+      `*District:* ${olevelData.fatherDistrict || 'N/A'}\n\n` +
+      `*--- MOTHER ---*\n` +
+      `*Name:* ${olevelData.motherName}\n` +
+      `*Contact:* ${olevelData.motherContact}\n` +
+      `*WhatsApp:* ${olevelData.motherWhatsapp || 'N/A'}\n` +
+      `*NIN:* ${olevelData.motherNin || 'N/A'}\n` +
+      `*Village:* ${olevelData.motherVillage || 'N/A'}\n` +
+      `*Parish:* ${olevelData.motherParish || 'N/A'}\n` +
+      `*Subcounty:* ${olevelData.motherSubcounty || 'N/A'}\n` +
+      `*District:* ${olevelData.motherDistrict || 'N/A'}`
 
     window.open(`https://wa.me/256779268469?text=${encodeURIComponent(message)}`, '_blank')
     setFormSubmitted(true)
     setTimeout(() => setFormSubmitted(false), 8000)
   }
 
+  const handleAlevelSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    const message = `*NEW S.5 APPLICATION (A'LEVEL)*\n\n` +
+      `*Student:* ${alevelData.studentName}\n` +
+      `*DOB:* ${alevelData.dateOfBirth}\n` +
+      `*Gender:* ${alevelData.gender}\n` +
+      `*Religion:* ${alevelData.religion || 'N/A'}\n\n` +
+      `*Former School:* ${alevelData.formerSchool}\n` +
+      `*UCE Index:* ${alevelData.uceIndex}\n` +
+      `*LIN:* ${alevelData.lin}\n\n` +
+      `*--- SUBJECT SCORES ---*\n` +
+      `English: ${alevelData.english || '-'}\n` +
+      `Math: ${alevelData.math || '-'}\n` +
+      `Biology: ${alevelData.biology || '-'}\n` +
+      `Chemistry: ${alevelData.chemistry || '-'}\n` +
+      `Physics: ${alevelData.physics || '-'}\n` +
+      `History: ${alevelData.history || '-'}\n` +
+      `CRE: ${alevelData.cre || '-'}\n` +
+      `Agriculture: ${alevelData.agriculture || '-'}\n` +
+      `Geography: ${alevelData.geography || '-'}\n` +
+      `Luganda: ${alevelData.luganda || '-'}\n` +
+      `Kiswahili: ${alevelData.kiswahili || '-'}\n` +
+      `Fine Art: ${alevelData.fineArt || '-'}\n` +
+      `ICT: ${alevelData.ict || '-'}\n` +
+      `Chinese: ${alevelData.chinese || '-'}\n\n` +
+      `*Preferred Combination:* ${alevelData.preferredCombination}\n` +
+      `*Sport:* ${alevelData.preferredSport || 'N/A'}\n` +
+      `*Co-Curricular:* ${alevelData.coCurricular || 'N/A'}\n` +
+      `*Health:* ${alevelData.health || 'None'}\n\n` +
+      `*--- FATHER ---*\n` +
+      `*Name:* ${alevelData.fatherName}\n` +
+      `*Contact:* ${alevelData.fatherContact}\n` +
+      `*WhatsApp:* ${alevelData.fatherWhatsapp || 'N/A'}\n` +
+      `*NIN:* ${alevelData.fatherNin || 'N/A'}\n` +
+      `*Village:* ${alevelData.fatherVillage || 'N/A'}\n` +
+      `*Parish:* ${alevelData.fatherParish || 'N/A'}\n` +
+      `*Subcounty:* ${alevelData.fatherSubcounty || 'N/A'}\n` +
+      `*County:* ${alevelData.fatherCounty || 'N/A'}\n\n` +
+      `*--- MOTHER ---*\n` +
+      `*Name:* ${alevelData.motherName}\n` +
+      `*Contact:* ${alevelData.motherContact}\n` +
+      `*WhatsApp:* ${alevelData.motherWhatsapp || 'N/A'}\n` +
+      `*NIN:* ${alevelData.motherNin || 'N/A'}\n` +
+      `*Village:* ${alevelData.motherVillage || 'N/A'}\n` +
+      `*Parish:* ${alevelData.motherParish || 'N/A'}\n` +
+      `*Subcounty:* ${alevelData.motherSubcounty || 'N/A'}\n` +
+      `*District:* ${alevelData.motherDistrict || 'N/A'}`
+
+    window.open(`https://wa.me/256779268469?text=${encodeURIComponent(message)}`, '_blank')
+    setFormSubmitted(true)
+    setTimeout(() => setFormSubmitted(false), 8000)
+  }
+
+  const handleDonorSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const message = `*NEW DONOR REGISTRATION*\n\n` +
+      `*Name:* ${donorData.donorName}\n` +
+      `*Contact:* ${donorData.donorContact}\n` +
+      `*Country:* ${donorData.donorCountry}\n` +
+      `*Address:* ${donorData.donorAddress || 'N/A'}\n` +
+      `*Amount (USD):* $${donorData.donorAmount}\n\n` +
+      `*Message:* ${donorData.donorMessage || 'None'}`
+
+    window.open(`https://wa.me/256779268469?text=${encodeURIComponent(message)}`, '_blank')
+    setDonorSubmitted(true)
+    setTimeout(() => setDonorSubmitted(false), 8000)
+  }
+
   const stats = [
-    { label: 'Pass Rate', value: '98.5%', icon: Award },
-    { label: 'Active Students', value: '850+', icon: Users },
-    { label: 'Qualified Teachers', value: '45+', icon: GraduationCap },
-    { label: 'Years Excellence', value: '25+', icon: ShieldCheck },
+    { label: 'Year Founded', value: '1986', icon: Award },
+    { label: 'Government Aided', value: '2011', icon: ShieldCheck },
+    { label: 'School Heritage', value: 'Catholic', icon: Cross },
+    { label: 'Location', value: 'Luweero', icon: MapPin },
   ]
 
   const highlights = [
     { title: 'Holistic Academic Excellence', desc: 'Nurturing young minds through modern curriculum, technology integration, and personalized guidance.', icon: BookOpen, tag: 'Academics' },
     { title: 'Music, Dance & Drama (MDD)', desc: 'Award-winning cultural, theatrical, and musical talent development built right into our weekly routine.', icon: Music, tag: 'Co-Curricular' },
     { title: 'Safe & Nurturing Environment', desc: 'State-of-the-art facilities with round-the-clock safety, mentorship, and moral leadership training.', icon: Heart, tag: 'Campus Life' },
-  ]
-
-  const subjects = [
-    'English', 'Mathematics', 'Biology', 'Physics', 'Chemistry',
-    'History', 'Geography', 'CRE', 'ICT', 'Chinese',
-    'Entrepreneurship', 'Luganda', 'Agriculture', 'Fine Art', 'Kiswahili'
-  ]
-
-  const subjectCategories = [
-    { category: 'Sciences', icon: FlaskConical, color: 'bg-emerald-50 border-emerald-200 text-emerald-700', subjects: ['Biology', 'Physics', 'Chemistry', 'Agriculture'] },
-    { category: 'Mathematics', icon: Calculator, color: 'bg-blue-50 border-blue-200 text-blue-700', subjects: ['Mathematics'] },
-    { category: 'Languages', icon: Languages, color: 'bg-purple-50 border-purple-200 text-purple-700', subjects: ['English', 'Luganda', 'Kiswahili', 'Chinese'] },
-    { category: 'Humanities', icon: Globe, color: 'bg-amber-50 border-amber-200 text-amber-700', subjects: ['History', 'Geography', 'CRE'] },
-    { category: 'Applied & Creative', icon: Palette, color: 'bg-rose-50 border-rose-200 text-rose-700', subjects: ['ICT', 'Entrepreneurship', 'Fine Art'] },
   ]
 
   const houses = [
@@ -114,10 +246,9 @@ export default function LandingPage() {
     { name: 'ICT Club', icon: Laptop, desc: 'Digital literacy and coding skills' },
   ]
 
-  // ===== LEADERSHIP — 5 core members + extended team =====
+  // ============ CURRENT LEADERSHIP ============
   const leadership = [
-    { name: 'Madam Noe', role: 'Headteacher', image: '/images/HM NOE.jpg' },
-    { name: 'Mr. Lwegaba Emmanuel', role: 'Deputy Headteacher', image: '/images/LWEGABA EMMANUEL1.JPG.jpeg' },
+    { name: 'Mr. Lwegaba Emmanuel', role: 'Headteacher', image: '/images/LWEGABA EMMANUEL1.JPG.jpeg' },
     { name: 'Mr. Ssewanyana Mathias', role: 'Deputy Headteacher', image: '/images/Mathias 1.jpeg' },
     { name: 'Mr. Kateregga Benedict', role: 'Deputy Headteacher', image: '/images/KATEREGGA BENDICT.JPG.jpeg' },
     { name: 'Mr. Mulondo Allan', role: 'Director of Studies', image: '/images/MULONDO ALLAN.JPG.jpeg' },
@@ -133,9 +264,8 @@ export default function LandingPage() {
 
   const coreValues = ['Devout', 'Responsibility', 'Ethical', 'Admirable', 'Diligent', 'Excellence', 'Dependable']
 
-  // ===== GALLERY =====
+  // ============ GALLERY (Curated) ============
   const galleryPreview = [
-    // MDD Series
     { src: '/images/MDD.jpg', title: 'MDD Festival', category: 'mdd', description: 'Annual Music, Dance & Drama festival' },
     { src: '/images/MDD1.jpg', title: 'Stage Performance', category: 'mdd', description: 'Students on stage' },
     { src: '/images/MDD2.jpg', title: 'MDD Performance', category: 'mdd', description: 'Cultural dance performance' },
@@ -152,34 +282,14 @@ export default function LandingPage() {
     { src: '/images/MDD13.jpg', title: 'Drama Performance', category: 'mdd', description: 'Drama presentation' },
     { src: '/images/MDD14.jpg', title: 'Cultural Dance', category: 'mdd', description: 'Cultural dance' },
     { src: '/images/MDD15.jpg', title: 'Finale', category: 'mdd', description: 'Grand finale' },
-    // Sept 21 WhatsApp images
+    { src: '/images/PARENTS.jpg', title: 'Parent Engagement', category: 'academics', description: 'Parents meeting day' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.29 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-21 at 1.37.30 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.31 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-21 at 1.37.32 PM (1).jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-21 at 1.37.32 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-21 at 1.37.33 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    // Sept 23 WhatsApp images
     { src: '/images/WhatsApp Image 2026-09-23 at 1.01.14 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-23 at 1.01.44 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-23 at 1.01.48 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-23 at 1.02.16 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.17 PM (1).jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.17 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.21 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
     { src: '/images/WhatsApp Image 2026-09-23 at 1.02.22 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.30 PM.jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-23 at 1.02.32 PM (1).jpeg', title: 'School Moment', category: 'academics', description: 'Recent school activity' },
-    // Sept 19 WhatsApp images
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.28 AM.jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.29 AM (1).jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.29 AM (2).jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.29 AM.jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.30 AM (1).jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.30 AM.jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    { src: '/images/WhatsApp Image 2026-09-19 at 9.40.31 AM.jpeg', title: 'School Event', category: 'academics', description: 'Recent school activity' },
-    // Campus
-    { src: '/images/PARENTS.jpg', title: 'Parent Engagement', category: 'academics', description: 'Parents meeting day' },
   ]
 
   const filteredGallery = activeTab === 'all' ? galleryPreview : galleryPreview.filter(item => item.category === activeTab)
@@ -190,6 +300,7 @@ export default function LandingPage() {
     { name: 'About', href: '/about' },
     { name: 'Academics', href: '/academics' },
     { name: 'Admissions', href: '/admissions' },
+    { name: 'Downloads', href: '/downloads' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Leadership', href: '/leadership' },
     { name: 'Contact', href: '/contact' },
@@ -202,12 +313,15 @@ export default function LandingPage() {
     phone: '+256 779 268 469',
     alternativePhone: '+256 705 400 493',
     email: 'skalssm.2013@gmail.com',
-    location: 'Mulajje Parish, Bamunanika Sub County, Luweero District, Uganda',
+    location: 'Mulajje/Ndyalumu Village, Kyampisi Parish, Bamunanika Sub-county, Bamunanika County, Luweero District, Central Uganda',
     whatsapp: '256779268469',
     founded: '1986',
     governmentAided: '2011',
     diocese: 'Kasana Luweero Diocese',
-    tiktok: 'https://vm.tiktok.com/ZS9A1Ue4SRMcc-NA2Ld/',
+    tiktok: 'https://www.tiktok.com/@stkaloolilwangassmulajje',
+    facebook: 'https://www.facebook.com/StKalooliLwangaSSMulajje',
+    youtube: 'https://www.youtube.com/@st.kaloolilwangassmulajje5064',
+    twitter: '',
   }
 
   return (
@@ -253,10 +367,9 @@ export default function LandingPage() {
               <span className="bg-[#bd703f]/30 text-[#e7bd5f] px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase">
                 Admissions Open 2026
               </span>
-              <Link href="/support" className="hover:text-white transition flex items-center gap-1">
+              <Link href="#support" className="hover:text-white transition flex items-center gap-1">
                 <HandHeart size={12} /> Support Us
               </Link>
-              <Link href="/admin/login" className="hover:text-white transition">Admin Portal</Link>
             </div>
           </div>
         </div>
@@ -278,7 +391,7 @@ export default function LandingPage() {
               </div>
             </Link>
 
-            <nav className="hidden lg:flex items-center gap-5">
+            <nav className="hidden lg:flex items-center gap-4">
               {navLinks.map((link) => (
                 <Link key={link.name} href={link.href}
                   className="text-sm font-medium text-slate-200 hover:text-[#e7bd5f] transition-colors relative group">
@@ -289,7 +402,7 @@ export default function LandingPage() {
             </nav>
 
             <div className="hidden lg:flex items-center gap-3">
-              <Link href="/support" className="text-sm font-medium text-[#e7bd5f] hover:text-white transition-colors flex items-center gap-1.5">
+              <Link href="#support" className="text-sm font-medium text-[#e7bd5f] hover:text-white transition-colors flex items-center gap-1.5">
                 <HandHeart size={15} /> Donate
               </Link>
               <Button className="bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 font-semibold shadow-lg shadow-[#bd703f]/30 transition-all hover:shadow-[#bd703f]/50">
@@ -337,7 +450,7 @@ export default function LandingPage() {
                 </h1>
 
                 <p className="text-base sm:text-lg text-slate-100 max-w-2xl font-light leading-relaxed mx-auto lg:mx-0 drop-shadow-lg">
-                  A Catholic-founded, government-aided secondary school committed to nurturing educated, self-reliant, patriotic and God-fearing citizens.
+                  St. Kalooli Lwanga SS Mulajje has nurtured young generations of the Mulajje community and the entire Uganda — a Catholic-founded, government-aided secondary school committed to producing educated, self-reliant, patriotic and God-fearing citizens.
                 </p>
 
                 <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
@@ -461,79 +574,19 @@ export default function LandingPage() {
                 <p className="mt-5 text-base leading-8 text-slate-600">
                   St. Kalooli Lwanga SS Mulajje has served the young people of Mulajje Parish and the wider Luweero community since 1986. Our Catholic heritage shapes a culture of faith, learning, responsibility and service.
                 </p>
-                <p className="mt-4 text-sm leading-7 text-slate-500">
-                  Located in Bamunanika Sub County, Luweero District, under Kasana Luweero Diocese, we became a government-aided school in 2011. Our motto — <em className="text-[#a65c4b] font-semibold">"Only the Best is Good Enough"</em> — reflects our commitment to excellence.
-                </p>
+                <div className="mt-5 rounded-2xl bg-[#f7f4ee] border border-[#142f4a]/10 p-5">
+                  <p className="text-xs font-bold uppercase tracking-widest text-[#a65c4b] mb-3">Our Location</p>
+                  <p className="text-sm leading-7 text-slate-600">
+                    St. Kalooli Lwanga SS Mulajje is located at <strong className="text-[#142f4a]">Mulajje/Ndyalumu Village, Kyampisi Parish, Bamunanika Sub-county, Bamunanika County, Luweero District, Central Uganda</strong>.
+                  </p>
+                  <p className="text-xs leading-6 text-slate-500 mt-3">
+                    <strong className="text-[#142f4a]">Directions from Kampala:</strong> Take the Kampala–Gulu Road. At Wobulenzi, turn right onto Bamunanika Road. From Bamunanika Trading Centre, take the Nalweweta–Mulajje Church Road, pass St. Bonaventure Primary School, and you will arrive at St. Kalooli Lwanga SS Mulajje.
+                  </p>
+                </div>
                 <Link href="/about" className="mt-8 inline-flex items-center gap-2 font-semibold text-[#a65c4b] hover:text-[#142f4a] transition-colors group">
                   Read our story <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============ ACADEMICS ============ */}
-        <section className="max-w-7xl mx-auto px-6 py-16" id="academics">
-          <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">Academic Excellence</p>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white drop-shadow-lg">
-              Comprehensive Curriculum for O'Level & A'Level
-            </h2>
-            <p className="text-slate-100 text-sm sm:text-base drop-shadow">
-              We prepare our learners with a broad range of subjects and combinations to ensure holistic academic and professional development.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-[#142f4a]/95 backdrop-blur-md p-8 text-white shadow-xl lg:p-10 mb-8 border border-white/10">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div>
-                <span className="inline-block rounded-full bg-[#e7bd5f]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-[#e7bd5f]">
-                  Advanced Level
-                </span>
-                <h3 className="mt-3 font-serif text-3xl font-semibold text-white">A'Level Combinations</h3>
-                <p className="mt-2 text-lg text-white/80">Both Science and Arts combinations are offered.</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 text-sm font-semibold text-[#e7bd5f] backdrop-blur-md">
-                  <FlaskConical size={18} className="text-[#e7bd5f]" /> Sciences
-                </div>
-                <div className="flex items-center gap-2 rounded-2xl bg-white/10 px-5 py-3 text-sm font-semibold text-[#e7bd5f] backdrop-blur-md">
-                  <Palette size={18} className="text-[#e7bd5f]" /> Arts
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <h3 className="font-serif text-2xl font-bold text-white drop-shadow-lg mb-6">Subjects Offered</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-            {subjectCategories.map((group, i) => (
-              <div key={i} className={`rounded-2xl border-2 ${group.color} bg-white/95 backdrop-blur-md p-6 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300`}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-lg bg-white shadow-sm">
-                    <group.icon size={20} />
-                  </div>
-                  <h4 className="font-serif text-lg font-bold">{group.category}</h4>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {group.subjects.map((s) => (
-                    <span key={s} className="text-xs font-medium bg-white/70 px-2.5 py-1 rounded-md">{s}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-2xl bg-white/95 backdrop-blur-md border border-white/40 p-6 shadow-xl">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#a65c4b] mb-4">All Subjects at a Glance</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {subjects.map((subject, idx) => (
-                <div key={subject} className="flex items-center gap-2 rounded-xl border border-[#142f4a]/10 bg-[#f7f4ee] p-3 transition hover:-translate-y-0.5 hover:shadow-md">
-                  <span className="flex size-6 items-center justify-center rounded-full bg-[#bd703f] text-[10px] font-bold text-white shrink-0">
-                    {idx + 1}
-                  </span>
-                  <span className="text-xs font-semibold text-[#142f4a]">{subject}</span>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -609,7 +662,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ============ LEADERSHIP — 5 CORE MEMBERS ============ */}
+        {/* ============ LEADERSHIP ============ */}
         <section className="max-w-7xl mx-auto px-6 py-16">
           <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
             <p className="text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">Our Leadership</p>
@@ -617,7 +670,7 @@ export default function LandingPage() {
               Guiding Our Mission Forward
             </h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
             {leadership.map((person, i) => (
               <div key={i} className="group bg-white/95 backdrop-blur-md rounded-2xl overflow-hidden border border-white/40 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
                 <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-[#142f4a] to-[#1a3a5c]">
@@ -648,53 +701,45 @@ export default function LandingPage() {
           <div className="rounded-3xl bg-gradient-to-br from-[#142f4a]/95 to-[#0d2338] backdrop-blur-md border border-[#e7bd5f]/30 shadow-2xl overflow-hidden">
             <div className="grid lg:grid-cols-12 gap-0 items-stretch">
 
-              {/* Left — decorative + badge */}
-              <div className="lg:col-span-4 relative bg-gradient-to-br from-[#bd703f] to-[#142f4a] p-8 lg:p-10 flex flex-col justify-between overflow-hidden">
-                <div className="absolute -top-10 -right-10 size-48 rounded-full bg-[#e7bd5f]/20 blur-3xl" />
-                <div className="absolute -bottom-10 -left-10 size-48 rounded-full bg-[#bd703f]/20 blur-3xl" />
-
-                <div className="relative">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-6">
-                    <Sparkles size={12} /> Saint of the Day
-                  </div>
-
-                  <div className="size-20 rounded-full bg-white/10 backdrop-blur-md border border-[#e7bd5f]/40 flex items-center justify-center mb-6">
-                    <Cross size={36} className="text-[#e7bd5f]" />
-                  </div>
-
-                  <h3 className="font-serif text-3xl font-bold text-white leading-tight">
-                    St. Kalooli<br />Lwanga
-                  </h3>
-                  <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">
-                    Uganda Martyr · Patron of Youth
-                  </p>
-                </div>
-
-                <div className="relative mt-8 space-y-2 text-xs text-white/70">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={13} className="text-[#e7bd5f]" /> Feast Day: June 3
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Flame size={13} className="text-[#e7bd5f]" /> Martyred 1886 at Namugongo
-                  </div>
+              {/* Left — Poster Image */}
+              <div className="lg:col-span-5 relative bg-[#0d2338] overflow-hidden">
+                <img
+                  src="/images/saintPic.jpeg"
+                  alt="Saint Kalooli Lwanga — Uganda Martyr Leader"
+                  className="size-full object-cover object-center min-h-[400px] lg:min-h-full"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                    const parent = e.currentTarget.parentElement
+                    if (parent) {
+                      parent.classList.add(
+                        'bg-gradient-to-br',
+                        'from-[#bd703f]',
+                        'to-[#142f4a]'
+                      )
+                    }
+                  }}
+                />
+                <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#e7bd5f] text-[#142f4a] text-[10px] font-bold uppercase tracking-widest shadow-lg">
+                  <Crown size={11} /> Saint of the Day
                 </div>
               </div>
 
-              {/* Right — content */}
-              <div className="lg:col-span-8 p-8 lg:p-10 flex flex-col justify-between">
+              {/* Right — Content */}
+              <div className="lg:col-span-7 p-8 lg:p-10 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <Crown size={20} className="text-[#e7bd5f]" />
-                    <p className="text-xs font-bold uppercase tracking-[0.28em] text-[#e7bd5f]">
-                      Our Patron Saint
-                    </p>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-[#e7bd5f]/30 text-[10px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-4">
+                    <Cross size={11} /> Feast Day: June 3
                   </div>
 
-                  <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white leading-tight mb-5">
-                    Courageous Leader. Faithful Martyr. Friend of Christ.
+                  <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white leading-tight mb-2">
+                    St. Kalooli Lwanga
                   </h2>
+                  <p className="text-sm font-bold uppercase tracking-[0.28em] text-[#e7bd5f] mb-6">
+                    Courageous Leader · Faithful Martyr · Friend of Christ
+                  </p>
 
-                  <p className="text-sm leading-7 text-white/75 mb-6">
+                  <p className="text-sm leading-7 text-white/80 mb-6">
                     St. Kalooli Lwanga was the chief of the royal pages in the court of Kabaka Mwanga II
                     of Buganda. He used his position to protect the young Christians and lead them in
                     the way of faith. On June 3, 1886, he was burned alive at Namugongo with his
@@ -708,14 +753,29 @@ export default function LandingPage() {
                     </p>
                     <p className="text-xs text-[#e7bd5f] mt-1 tracking-wider">— St. Kalooli Lwanga</p>
                   </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-6">
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-2.5 text-center">
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-0.5">Born</p>
+                      <p className="text-[11px] text-white/80">c. 1860</p>
+                    </div>
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-2.5 text-center">
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-0.5">Martyred</p>
+                      <p className="text-[11px] text-white/80">June 3, 1886</p>
+                    </div>
+                    <div className="rounded-xl bg-white/5 border border-white/10 p-2.5 text-center col-span-2 sm:col-span-1">
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-0.5">Canonized</p>
+                      <p className="text-[11px] text-white/80">Oct 18, 1964</p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-3 mt-4">
+                <div className="flex flex-wrap gap-3 mt-2">
                   <Link
                     href="/saint-of-the-day"
                     className="inline-flex items-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 text-sm font-semibold shadow-lg transition-all hover:-translate-y-0.5"
                   >
-                    Read His Story <ArrowRight size={15} />
+                    Read His Full Story <ArrowRight size={15} />
                   </Link>
                   <Link
                     href="/saint-of-the-day#prayer"
@@ -832,8 +892,29 @@ export default function LandingPage() {
               Apply Online — Fill the Form Below
             </h2>
             <p className="text-slate-100 text-sm sm:text-base drop-shadow">
-              Complete this form and submit. Your application will be sent directly to our admissions office via WhatsApp for immediate processing.
+              Choose O'Level (S.1 from PLE) or A'Level (S.5 from UCE) and complete the form. Your application will be sent to our admissions office via WhatsApp.
             </p>
+          </div>
+
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex gap-2 p-1.5 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
+              <button type="button" onClick={() => setApplicantType('olevel')}
+                className={`px-6 py-3 rounded-full text-sm font-semibold transition-all ${
+                  applicantType === 'olevel' ? 'bg-[#bd703f] text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}>
+                <span className="flex items-center gap-2">
+                  <BookOpen size={16} /> O'Level (S.1 from PLE)
+                </span>
+              </button>
+              <button type="button" onClick={() => setApplicantType('alevel')}
+                className={`px-6 py-3 rounded-full text-sm font-semibold transition-all ${
+                  applicantType === 'alevel' ? 'bg-[#bd703f] text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}>
+                <span className="flex items-center gap-2">
+                  <GraduationCap size={16} /> A'Level (S.5 from UCE)
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-white/40 shadow-2xl p-6 md:p-10">
@@ -844,14 +925,15 @@ export default function LandingPage() {
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-[#142f4a] mb-3">Application Submitted!</h3>
                 <p className="text-slate-600 mb-6 max-w-md mx-auto">
-                  Your application has been prepared and is opening in WhatsApp. Please send the message to complete your submission. Our admissions team will get back to you shortly.
+                  Your application has been prepared and is opening in WhatsApp. Please send the message to complete your submission.
                 </p>
                 <button onClick={() => setFormSubmitted(false)} className="inline-flex items-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 font-semibold transition-all">
                   Submit Another Application
                 </button>
               </div>
-            ) : (
-              <form onSubmit={handleFormSubmit} className="space-y-6">
+            ) : applicantType === 'olevel' ? (
+              /* ============ O'LEVEL FORM ============ */
+              <form onSubmit={handleOlevelSubmit} className="space-y-6">
                 <div>
                   <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
                     <User size={18} className="text-[#bd703f]" /> Student Information
@@ -859,17 +941,18 @@ export default function LandingPage() {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">Student's Full Name *</label>
-                      <input type="text" name="studentName" value={formData.studentName} onChange={handleFormChange} required
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="e.g., Nakato Sarah" />
+                      <input type="text" name="studentName" value={olevelData.studentName} onChange={handleOlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., Nakato Sarah" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">Date of Birth *</label>
-                      <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleFormChange} required
+                      <input type="date" name="dateOfBirth" value={olevelData.dateOfBirth} onChange={handleOlevelChange} required
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">Gender *</label>
-                      <select name="gender" value={formData.gender} onChange={handleFormChange} required
+                      <select name="gender" value={olevelData.gender} onChange={handleOlevelChange} required
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm bg-white">
                         <option value="">Select gender</option>
                         <option value="Male">Male</option>
@@ -877,38 +960,106 @@ export default function LandingPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Level Applying For *</label>
-                      <select name="level" value={formData.level} onChange={handleFormChange} required
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm bg-white">
-                        <option value="">Select level</option>
-                        <option value="Senior 1 (O'Level)">Senior 1 (O'Level)</option>
-                        <option value="Senior 2 (O'Level)">Senior 2 (O'Level)</option>
-                        <option value="Senior 3 (O'Level)">Senior 3 (O'Level)</option>
-                        <option value="Senior 4 (O'Level)">Senior 4 (O'Level)</option>
-                        <option value="Senior 5 (A'Level)">Senior 5 (A'Level)</option>
-                        <option value="Senior 6 (A'Level)">Senior 6 (A'Level)</option>
-                      </select>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Religion</label>
+                      <input type="text" name="religion" value={olevelData.religion} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., Catholic, Anglican, Muslim" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <Award size={18} className="text-[#bd703f]" /> PLE Results
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">PLE Index Number *</label>
+                      <input type="text" name="pleIndex" value={olevelData.pleIndex} onChange={handleOlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., 012345/067" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">A'Level Combination (if applicable)</label>
-                      <input type="text" name="combination" value={formData.combination} onChange={handleFormChange}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="e.g., PCM, HEG, BCM" />
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Year of PLE *</label>
+                      <input type="text" name="pleYear" value={olevelData.pleYear} onChange={handleOlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., 2025" />
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-[#f7f4ee] border border-[#142f4a]/10 p-5">
+                    <p className="text-xs font-bold uppercase tracking-widest text-[#a65c4b] mb-4">
+                      PLE Subject Aggregates (1-9, lower is better)
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">English *</label>
+                        <input type="number" name="englishAgg" value={olevelData.englishAgg} onChange={handleOlevelChange} required min="1" max="9"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                          placeholder="1-9" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Mathematics *</label>
+                        <input type="number" name="mathAgg" value={olevelData.mathAgg} onChange={handleOlevelChange} required min="1" max="9"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                          placeholder="1-9" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">SST *</label>
+                        <input type="number" name="sstAgg" value={olevelData.sstAgg} onChange={handleOlevelChange} required min="1" max="9"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                          placeholder="1-9" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 mb-1.5">Science *</label>
+                        <input type="number" name="scienceAgg" value={olevelData.scienceAgg} onChange={handleOlevelChange} required min="1" max="9"
+                          className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                          placeholder="1-9" />
+                      </div>
+                    </div>
+
+                    {calculatePleTotal() !== null && (
+                      <div className="mt-5 grid grid-cols-2 gap-4">
+                        <div className="rounded-xl bg-[#142f4a] p-4 text-white text-center">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-1">Total Aggregate</p>
+                          <p className="font-serif text-3xl font-bold">{calculatePleTotal()}</p>
+                        </div>
+                        <div className="rounded-xl bg-[#bd703f] p-4 text-white text-center">
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-1">Division</p>
+                          <p className="font-serif text-3xl font-bold">{calculateDivision(calculatePleTotal())}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <HeartPulse size={18} className="text-[#bd703f]" /> Health & Interests
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Health Challenges (if any)</label>
+                      <input type="text" name="health" value={olevelData.health} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., Asthma, Allergies, None" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Previous School *</label>
-                      <input type="text" name="previousSchool" value={formData.previousSchool} onChange={handleFormChange} required
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="Name of previous school" />
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Favourite Sport</label>
+                      <input type="text" name="favouriteSport" value={olevelData.favouriteSport} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., Football, Netball, Athletics" />
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-xs font-semibold text-slate-700 mb-1.5">Boarding / Day *</label>
                       <div className="grid grid-cols-2 gap-3">
-                        <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition ${formData.boarding === 'Boarding' ? 'border-[#bd703f] bg-[#bd703f]/5' : 'border-slate-300 hover:border-slate-400'}`}>
-                          <input type="radio" name="boarding" value="Boarding" checked={formData.boarding === 'Boarding'} onChange={handleFormChange} className="accent-[#bd703f]" required />
+                        <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition ${olevelData.boarding === 'Boarding' ? 'border-[#bd703f] bg-[#bd703f]/5' : 'border-slate-300 hover:border-slate-400'}`}>
+                          <input type="radio" name="boarding" value="Boarding" checked={olevelData.boarding === 'Boarding'} onChange={handleOlevelChange} className="accent-[#bd703f]" required />
                           <Home size={16} className="text-[#bd703f]" />
                           <span className="text-sm font-medium">Boarding</span>
                         </label>
-                        <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition ${formData.boarding === 'Day' ? 'border-[#bd703f] bg-[#bd703f]/5' : 'border-slate-300 hover:border-slate-400'}`}>
-                          <input type="radio" name="boarding" value="Day" checked={formData.boarding === 'Day'} onChange={handleFormChange} className="accent-[#bd703f]" required />
+                        <label className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition ${olevelData.boarding === 'Day' ? 'border-[#bd703f] bg-[#bd703f]/5' : 'border-slate-300 hover:border-slate-400'}`}>
+                          <input type="radio" name="boarding" value="Day" checked={olevelData.boarding === 'Day'} onChange={handleOlevelChange} className="accent-[#bd703f]" required />
                           <Calendar size={16} className="text-[#bd703f]" />
                           <span className="text-sm font-medium">Day</span>
                         </label>
@@ -919,90 +1070,486 @@ export default function LandingPage() {
 
                 <div className="pt-6 border-t border-slate-200">
                   <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
-                    <Users size={18} className="text-[#bd703f]" /> Parent / Guardian Information
+                    <User size={18} className="text-[#bd703f]" /> Father's Information
                   </h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Parent / Guardian Name *</label>
-                      <input type="text" name="parentName" value={formData.parentName} onChange={handleFormChange} required
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="Full name" />
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                      <input type="text" name="fatherName" value={olevelData.fatherName} onChange={handleOlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Phone Number *</label>
-                      <input type="tel" name="parentPhone" value={formData.parentPhone} onChange={handleFormChange} required
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Contact *</label>
+                      <input type="tel" name="fatherContact" value={olevelData.fatherContact} onChange={handleOlevelChange} required
                         className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="+256 7XX XXX XXX" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Email Address</label>
-                      <input type="email" name="parentEmail" value={formData.parentEmail} onChange={handleFormChange}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="email@example.com" />
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">WhatsApp Number</label>
+                      <input type="tel" name="fatherWhatsapp" value={olevelData.fatherWhatsapp} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Home Address</label>
-                      <input type="text" name="address" value={formData.address} onChange={handleFormChange}
-                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="Village, Parish, Sub-county" />
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">NIN</label>
+                      <input type="text" name="fatherNin" value={olevelData.fatherNin} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="National ID Number" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Village</label>
+                      <input type="text" name="fatherVillage" value={olevelData.fatherVillage} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Parish</label>
+                      <input type="text" name="fatherParish" value={olevelData.fatherParish} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Subcounty</label>
+                      <input type="text" name="fatherSubcounty" value={olevelData.fatherSubcounty} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">District</label>
+                      <input type="text" name="fatherDistrict" value={olevelData.fatherDistrict} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
                     </div>
                   </div>
                 </div>
 
                 <div className="pt-6 border-t border-slate-200">
-                  <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-2">
-                    <FileText size={14} className="text-[#bd703f]" /> Additional Information / Message
-                  </label>
-                  <textarea name="message" value={formData.message} onChange={handleFormChange} rows={4}
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm resize-none" placeholder="Any special requests, questions or additional information..." />
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <User size={18} className="text-[#bd703f]" /> Mother's Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                      <input type="text" name="motherName" value={olevelData.motherName} onChange={handleOlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Contact *</label>
+                      <input type="tel" name="motherContact" value={olevelData.motherContact} onChange={handleOlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="+256 7XX XXX XXX" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">WhatsApp Number</label>
+                      <input type="tel" name="motherWhatsapp" value={olevelData.motherWhatsapp} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">NIN</label>
+                      <input type="text" name="motherNin" value={olevelData.motherNin} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="National ID Number" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Village</label>
+                      <input type="text" name="motherVillage" value={olevelData.motherVillage} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Parish</label>
+                      <input type="text" name="motherParish" value={olevelData.motherParish} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Subcounty</label>
+                      <input type="text" name="motherSubcounty" value={olevelData.motherSubcounty} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">District</label>
+                      <input type="text" name="motherDistrict" value={olevelData.motherDistrict} onChange={handleOlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                  </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <p className="text-xs text-slate-500 text-center sm:text-left">
-                    By submitting, you agree to be contacted by the school. Your info is sent securely via WhatsApp.
-                  </p>
-                  <button type="submit" className="inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-8 py-3.5 font-semibold shadow-lg shadow-[#bd703f]/25 transition-all hover:-translate-y-0.5 whitespace-nowrap">
-                    <Send size={16} /> Submit Application
+                <div className="pt-6 border-t border-slate-200">
+                  <button type="submit" className="w-full inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-8 py-4 font-semibold shadow-lg shadow-[#bd703f]/25 transition-all hover:-translate-y-0.5">
+                    <Send size={16} /> Submit S.1 Application
+                  </button>
+                </div>
+              </form>
+            ) : (
+              /* ============ A'LEVEL FORM ============ */
+              <form onSubmit={handleAlevelSubmit} className="space-y-6">
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <User size={18} className="text-[#bd703f]" /> Student Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Student's Full Name *</label>
+                      <input type="text" name="studentName" value={alevelData.studentName} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Date of Birth *</label>
+                      <input type="date" name="dateOfBirth" value={alevelData.dateOfBirth} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Gender *</label>
+                      <select name="gender" value={alevelData.gender} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm bg-white">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Religion</label>
+                      <input type="text" name="religion" value={alevelData.religion} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <GraduationCap size={18} className="text-[#bd703f]" /> UCE Results
+                  </h3>
+                  <div className="grid md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Former School *</label>
+                      <input type="text" name="formerSchool" value={alevelData.formerSchool} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">UCE Index Number *</label>
+                      <input type="text" name="uceIndex" value={alevelData.uceIndex} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="e.g., U0123/567" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">LIN</label>
+                      <input type="text" name="lin" value={alevelData.lin} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" placeholder="Learner ID Number" />
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl bg-[#f7f4ee] border border-[#142f4a]/10 p-5">
+                    <p className="text-xs font-bold uppercase tracking-widest text-[#a65c4b] mb-4">
+                      UCE Subject Scores (1-9)
+                    </p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {[
+                        { name: 'english', label: 'English' },
+                        { name: 'math', label: 'Mathematics' },
+                        { name: 'biology', label: 'Biology' },
+                        { name: 'chemistry', label: 'Chemistry' },
+                        { name: 'physics', label: 'Physics' },
+                        { name: 'history', label: 'History' },
+                        { name: 'cre', label: 'CRE' },
+                        { name: 'agriculture', label: 'Agriculture' },
+                        { name: 'geography', label: 'Geography' },
+                        { name: 'luganda', label: 'Luganda' },
+                        { name: 'kiswahili', label: 'Kiswahili' },
+                        { name: 'fineArt', label: 'Fine Art' },
+                        { name: 'ict', label: 'ICT' },
+                        { name: 'chinese', label: 'Chinese' },
+                      ].map((subj) => (
+                        <div key={subj.name}>
+                          <label className="block text-xs font-semibold text-slate-700 mb-1.5">{subj.label}</label>
+                          <input
+                            type="number"
+                            name={subj.name}
+                            value={alevelData[subj.name as keyof typeof alevelData]}
+                            onChange={handleAlevelChange}
+                            min="1" max="9"
+                            className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                            placeholder="1-9" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="block text-xs font-semibold text-slate-700 mb-1.5">Preferred A'Level Combination *</label>
+                    <input type="text" name="preferredCombination" value={alevelData.preferredCombination} onChange={handleAlevelChange} required
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                      placeholder="e.g., PCM, HEG, BCM, PCB, HEL" />
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <HeartPulse size={18} className="text-[#bd703f]" /> Health & Interests
+                  </h3>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Preferred Sport</label>
+                      <input type="text" name="preferredSport" value={alevelData.preferredSport} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Co-Curricular Activity</label>
+                      <input type="text" name="coCurricular" value={alevelData.coCurricular} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Health Challenges</label>
+                      <input type="text" name="health" value={alevelData.health} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <User size={18} className="text-[#bd703f]" /> Father's Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                      <input type="text" name="fatherName" value={alevelData.fatherName} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Contact *</label>
+                      <input type="tel" name="fatherContact" value={alevelData.fatherContact} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">WhatsApp Number</label>
+                      <input type="tel" name="fatherWhatsapp" value={alevelData.fatherWhatsapp} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">NIN</label>
+                      <input type="text" name="fatherNin" value={alevelData.fatherNin} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Village</label>
+                      <input type="text" name="fatherVillage" value={alevelData.fatherVillage} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Parish</label>
+                      <input type="text" name="fatherParish" value={alevelData.fatherParish} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Subcounty</label>
+                      <input type="text" name="fatherSubcounty" value={alevelData.fatherSubcounty} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">County</label>
+                      <input type="text" name="fatherCounty" value={alevelData.fatherCounty} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <User size={18} className="text-[#bd703f]" /> Mother's Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                      <input type="text" name="motherName" value={alevelData.motherName} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Contact *</label>
+                      <input type="tel" name="motherContact" value={alevelData.motherContact} onChange={handleAlevelChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">WhatsApp Number</label>
+                      <input type="tel" name="motherWhatsapp" value={alevelData.motherWhatsapp} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">NIN</label>
+                      <input type="text" name="motherNin" value={alevelData.motherNin} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Village</label>
+                      <input type="text" name="motherVillage" value={alevelData.motherVillage} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Parish</label>
+                      <input type="text" name="motherParish" value={alevelData.motherParish} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Subcounty</label>
+                      <input type="text" name="motherSubcounty" value={alevelData.motherSubcounty} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">District</label>
+                      <input type="text" name="motherDistrict" value={alevelData.motherDistrict} onChange={handleAlevelChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200">
+                  <button type="submit" className="w-full inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-8 py-4 font-semibold shadow-lg shadow-[#bd703f]/25 transition-all hover:-translate-y-0.5">
+                    <Send size={16} /> Submit S.5 Application
                   </button>
                 </div>
               </form>
             )}
           </div>
 
-          <div className="mt-8 text-center text-sm text-slate-100 drop-shadow">
-            Prefer to talk? Call <a href={`tel:${schoolInfo.phone.replace(/\s/g, '')}`} className="font-semibold text-[#e7bd5f] hover:underline">{schoolInfo.phone}</a> or{' '}
-            <a href={`https://wa.me/${schoolInfo.whatsapp}`} target="_blank" rel="noreferrer" className="font-semibold text-[#e7bd5f] hover:underline">chat on WhatsApp</a>.
+          {/* Download CTA */}
+          <div className="mt-6 rounded-2xl bg-[#e7bd5f]/10 backdrop-blur-md border border-[#e7bd5f]/30 p-5 flex flex-col sm:flex-row items-center gap-4">
+            <div className="p-3 rounded-xl bg-[#e7bd5f]/20 text-[#e7bd5f] shrink-0">
+              <FileText size={22} />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <p className="font-semibold text-white text-sm">Need the full requirements list?</p>
+              <p className="text-xs text-white/70 mt-0.5">Download or print the complete checklist for O'Level or A'Level before reporting.</p>
+            </div>
+            <Link
+              href="/downloads"
+              className="inline-flex items-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-5 py-2.5 text-sm font-semibold transition-all hover:-translate-y-0.5 whitespace-nowrap"
+            >
+              <Download size={14} /> View Downloads
+            </Link>
           </div>
         </section>
 
-        {/* ============ SUPPORT ============ */}
-        <section className="max-w-7xl mx-auto px-6 py-16">
+        {/* ============ SUPPORT / DONATE ============ */}
+        <section className="max-w-7xl mx-auto px-6 py-16" id="support">
           <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
             <p className="text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">Support Our Mission</p>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white drop-shadow-lg">Partner With Us to Transform Lives</h2>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white drop-shadow-lg">
+              Partner With Us to Transform Lives
+            </h2>
+            <p className="text-slate-100 text-sm sm:text-base drop-shadow">
+              Your generous support helps us provide quality education, improve facilities, and nurture the next generation of leaders.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {[
-              { icon: BookOpen, title: 'Sponsor a Student', desc: 'Support a deserving student\'s education by covering tuition, scholastic materials, and boarding fees.', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-              { icon: GraduationCap, title: 'Support Facilities', desc: 'Contribute to the construction of classrooms, libraries, laboratories, and dormitories.', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-              { icon: HandHeart, title: 'General Donation', desc: 'Any contribution goes a long way in supporting school programs, sports, and co-curricular activities.', color: 'bg-rose-50 text-rose-700 border-rose-200' }
-            ].map((item, i) => (
-              <div key={i} className={`group rounded-2xl border-2 ${item.color} bg-opacity-95 backdrop-blur-md p-8 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300`}>
-                <div className="p-3 rounded-xl bg-white shadow-sm inline-block mb-5 group-hover:scale-110 transition-transform">
-                  <item.icon size={28} />
-                </div>
-                <h3 className="font-serif text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-sm leading-relaxed opacity-80">{item.desc}</p>
+
+          <div className="rounded-3xl bg-white/95 backdrop-blur-md border border-white/40 shadow-2xl p-8 md:p-10 mb-8 max-w-3xl mx-auto">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#bd703f]/10 text-[#a65c4b] text-xs font-bold uppercase tracking-widest mb-4">
+                <HandHeart size={13} /> Boarding Sponsorship
               </div>
-            ))}
+              <h3 className="font-serif text-2xl font-bold text-[#142f4a] mb-2">
+                Sponsor a Son or Daughter
+              </h3>
+              <p className="text-sm text-slate-600 mb-6 max-w-xl mx-auto">
+                To support a student to attain education in the Boarding section:
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+                <div className="rounded-2xl bg-gradient-to-br from-[#bd703f] to-[#a65c4b] p-6 text-white shadow-lg">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/80 mb-1">Per Term</p>
+                  <p className="font-serif text-4xl font-bold">$175</p>
+                  <p className="text-xs text-white/80 mt-2">USD</p>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-br from-[#142f4a] to-[#0d2338] p-6 text-white shadow-lg">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#e7bd5f] mb-1">Per Year</p>
+                  <p className="font-serif text-4xl font-bold text-[#e7bd5f]">$525</p>
+                  <p className="text-xs text-white/60 mt-2">USD (3 terms)</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-500 mt-6 max-w-lg mx-auto">
+                This cost caters for <strong>scholastic materials</strong> and <strong>boarding requirements</strong>.
+              </p>
+            </div>
           </div>
+
+          <div className="rounded-3xl bg-white/95 backdrop-blur-md border border-white/40 shadow-2xl p-6 md:p-10 max-w-3xl mx-auto mb-8">
+            {donorSubmitted ? (
+              <div className="text-center py-12">
+                <div className="size-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+                  <Check size={40} className="text-green-600" />
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-[#142f4a] mb-3">Thank You!</h3>
+                <p className="text-slate-600 mb-6 max-w-md mx-auto">
+                  Your donor registration is opening in WhatsApp. Please send the message to complete your registration.
+                </p>
+                <button onClick={() => setDonorSubmitted(false)} className="inline-flex items-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 font-semibold transition-all">
+                  Register Another Donor
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-8">
+                  <h3 className="font-serif text-2xl font-bold text-[#142f4a] mb-2">Become a Donor</h3>
+                  <p className="text-sm text-slate-600">
+                    Fill in your details below. Our team will contact you to complete your contribution.
+                  </p>
+                </div>
+
+                <form onSubmit={handleDonorSubmit} className="space-y-5">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                      <input type="text" name="donorName" value={donorData.donorName} onChange={handleDonorChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., John Doe" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Contact (Phone/Email) *</label>
+                      <input type="text" name="donorContact" value={donorData.donorContact} onChange={handleDonorChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="+256 7XX XXX XXX or email" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Country *</label>
+                      <input type="text" name="donorCountry" value={donorData.donorCountry} onChange={handleDonorChange} required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., Uganda, USA, UK" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Address</label>
+                      <input type="text" name="donorAddress" value={donorData.donorAddress} onChange={handleDonorChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="City / Town / Village" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Amount You Wish to Donate (USD) *</label>
+                      <input type="number" name="donorAmount" value={donorData.donorAmount} onChange={handleDonorChange} required min="1"
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., 175" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Message / Purpose</label>
+                      <textarea name="donorMessage" value={donorData.donorMessage} onChange={handleDonorChange} rows={3}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm resize-none"
+                        placeholder="e.g., Sponsoring a student for one term" />
+                    </div>
+                  </div>
+
+                  <button type="submit"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-8 py-3.5 font-semibold shadow-lg transition-all hover:-translate-y-0.5">
+                    <Send size={16} /> Register as Donor
+                  </button>
+                  <p className="text-xs text-slate-500 text-center">
+                    Your details will be sent securely to the school. No payment is processed on this site.
+                  </p>
+                </form>
+              </>
+            )}
+          </div>
+
           <div className="rounded-2xl bg-[#142f4a]/95 backdrop-blur-md p-8 md:p-12 text-white text-center shadow-xl border border-white/10">
             <HandHeart size={40} className="text-[#e7bd5f] mx-auto mb-4" />
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold mb-3">Make a Difference Today</h3>
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold mb-3">Need to Talk to Us First?</h3>
             <div className="flex flex-wrap justify-center gap-3">
-              <a href={`tel:${schoolInfo.phone.replace(/\s/g, '')}`} className="inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 font-semibold transition-all hover:-translate-y-0.5">
+              <a href={`tel:${schoolInfo.phone.replace(/\s/g, '')}`}
+                className="inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 font-semibold transition-all hover:-translate-y-0.5">
                 <Phone size={16} /> Call to Donate
               </a>
-              <a href={`mailto:${schoolInfo.email}?subject=Donation%20Inquiry`} className="inline-flex items-center justify-center gap-2 border border-white/30 hover:bg-white/10 text-white rounded-full px-6 py-3 font-semibold backdrop-blur-sm transition-all hover:-translate-y-0.5">
+              <a href={`mailto:${schoolInfo.email}?subject=Donation%20Inquiry`}
+                className="inline-flex items-center justify-center gap-2 border border-white/30 hover:bg-white/10 text-white rounded-full px-6 py-3 font-semibold backdrop-blur-sm transition-all hover:-translate-y-0.5">
                 <Mail size={16} /> Email Us
               </a>
-              <a href={`https://wa.me/${schoolInfo.whatsapp}?text=${encodeURIComponent('Hello, I would like to support St. Kalooli Lwanga SS Mulajje.')}`} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 bg-[#1f9d58] hover:bg-[#18864a] text-white rounded-full px-6 py-3 font-semibold transition-all hover:-translate-y-0.5">
+              <a href={`https://wa.me/${schoolInfo.whatsapp}?text=${encodeURIComponent('Hello, I would like to support St. Kalooli Lwanga SS Mulajje.')}`}
+                target="_blank" rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-[#1f9d58] hover:bg-[#18864a] text-white rounded-full px-6 py-3 font-semibold transition-all hover:-translate-y-0.5">
                 <Phone size={16} /> WhatsApp
               </a>
             </div>
@@ -1046,13 +1593,13 @@ export default function LandingPage() {
                 <a href={schoolInfo.tiktok} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition" aria-label="TikTok">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
                 </a>
-                <a href="#" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition" aria-label="Facebook">
+                <a href={schoolInfo.facebook} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition" aria-label="Facebook">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 </a>
-                <a href="#" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition" aria-label="Instagram">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                <a href={schoolInfo.youtube} target="_blank" rel="noreferrer" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition" aria-label="YouTube">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
                 </a>
-                <a href="#" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition" aria-label="X">
+                <a href="#" className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-[#e7bd5f] transition opacity-50 cursor-not-allowed" aria-label="X (Twitter) — coming soon" onClick={(e) => e.preventDefault()}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                 </a>
               </div>
@@ -1065,25 +1612,38 @@ export default function LandingPage() {
                 <li><Link href="/academics" className="hover:text-white transition">Academics & Curriculum</Link></li>
                 <li><Link href="/gallery" className="hover:text-white transition">Photo Gallery</Link></li>
                 <li><Link href="/leadership" className="hover:text-white transition">School Leadership</Link></li>
-                <li><Link href="/support" className="hover:text-white transition">Support / Donate</Link></li>
+                <li><Link href="#support" className="hover:text-white transition">Support / Donate</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Admissions</h4>
               <ul className="space-y-2 text-xs">
-                <li><Link href="/admissions" className="hover:text-white transition">Admission Requirements</Link></li>
                 <li><Link href="#admissions-form" className="hover:text-white transition">Apply Online</Link></li>
+                <li><Link href="/downloads" className="hover:text-white transition">Requirements & Downloads</Link></li>
+                <li><Link href="/admissions" className="hover:text-white transition">Admission Info</Link></li>
                 <li><Link href="/fees" className="hover:text-white transition">Fees Structure</Link></li>
-                <li><Link href="/term-dates" className="hover:text-white transition">Term Dates & Calendar</Link></li>
+                <li><Link href="/term-dates" className="hover:text-white transition">Term Dates</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Contact Info</h4>
               <ul className="space-y-2.5 text-xs">
-                <li className="flex items-start gap-2"><MapPin size={14} className="text-[#e7bd5f] shrink-0 mt-0.5" /><span>{schoolInfo.location}</span></li>
-                <li className="flex items-center gap-2"><Phone size={14} className="text-[#e7bd5f] shrink-0" /><a href={`tel:${schoolInfo.phone.replace(/\s/g, '')}`} className="hover:text-white transition">{schoolInfo.phone}</a></li>
-                <li className="flex items-center gap-2"><Phone size={14} className="text-[#e7bd5f] shrink-0" /><a href={`tel:${schoolInfo.alternativePhone.replace(/\s/g, '')}`} className="hover:text-white transition">{schoolInfo.alternativePhone}</a></li>
-                <li className="flex items-center gap-2"><Mail size={14} className="text-[#e7bd5f] shrink-0" /><a href={`mailto:${schoolInfo.email}`} className="hover:text-white transition">{schoolInfo.email}</a></li>
+                <li className="flex items-start gap-2">
+                  <MapPin size={14} className="text-[#e7bd5f] shrink-0 mt-0.5" />
+                  <span>{schoolInfo.location}</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Phone size={14} className="text-[#e7bd5f] shrink-0" />
+                  <a href={`tel:${schoolInfo.phone.replace(/\s/g, '')}`} className="hover:text-white transition">{schoolInfo.phone}</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Phone size={14} className="text-[#e7bd5f] shrink-0" />
+                  <a href={`tel:${schoolInfo.alternativePhone.replace(/\s/g, '')}`} className="hover:text-white transition">{schoolInfo.alternativePhone}</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Mail size={14} className="text-[#e7bd5f] shrink-0" />
+                  <a href={`mailto:${schoolInfo.email}`} className="hover:text-white transition">{schoolInfo.email}</a>
+                </li>
               </ul>
             </div>
           </div>

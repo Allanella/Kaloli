@@ -3,33 +3,26 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import {
-  ArrowLeft, ArrowRight, Users, Award, ShieldCheck, GraduationCap,
-  Sparkles, Mail, Phone, MapPin, Heart, BookOpen, Music, Trophy,
-  Quote, Star, User, CheckCircle2, Crown
+  ArrowLeft, Users, Award, ShieldCheck, GraduationCap,
+  Sparkles, Mail, Phone, Heart, BookOpen, Quote, Star,
+  Crown, History, UserCheck, Building
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 export default function LeadershipPage() {
   const [badgeLoaded, setBadgeLoaded] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<'all' | 'administration' | 'staff'>('all')
+  const [activeFilter, setActiveFilter] = useState<'current' | 'former' | 'staff'>('current')
 
   const badgeSource = '/images/school-badge.png'
   const fallbackBadge = 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-kv7j1kFuiliMHehVyPm10Xb3zfcVzL.png'
 
-  // ============ CORE ADMINISTRATION ============
-  const administration = [
-    {
-      name: 'Madam Noe',
-      role: 'Headteacher',
-      image: '/images/HM NOE.jpg',
-      bio: 'Leads the school with a vision of excellence, faith and holistic development of every learner.',
-      featured: true,
-    },
+  // ============ CURRENT LEADERSHIP ============
+  const currentLeadership = [
     {
       name: 'Mr. Lwegaba Emmanuel',
-      role: 'Deputy Headteacher',
+      role: 'Headteacher',
       image: '/images/LWEGABA EMMANUEL1.JPG.jpeg',
-      bio: 'Oversees academic affairs and coordinates the teaching staff to deliver quality education.',
+      bio: 'Leads the school with a vision of excellence, faith and holistic development of every learner.',
+      featured: true,
     },
     {
       name: 'Mr. Ssewanyana Mathias',
@@ -51,7 +44,26 @@ export default function LeadershipPage() {
     },
   ]
 
-  // ============ EXTENDED STAFF (from Sept 23 images) ============
+  // ============ FORMER HEADTEACHERS ============
+  const formerHeadteachers = [
+    { name: 'Mr. Nsubuga Benedicto (RIP)', role: 'First Headteacher', years: '1986' },
+    { name: 'Mr. Innocent Twinomugisha', role: 'Former Headteacher', years: '' },
+    { name: 'Mr. Hertega Ladis (RIP)', role: 'Former Headteacher', years: '' },
+    { name: 'Mr. Kivvumbi', role: 'Former Headteacher', years: '' },
+    { name: 'Mr. Musoke Joseph', role: 'Former Headteacher', years: '' },
+    { name: 'Mr. Kawuma Constantine David', role: 'Former Headteacher', years: '' },
+    { name: 'Mrs. Noeline Nabasinga Ntanda', role: 'Former Headteacher', years: '' },
+  ]
+
+  // ============ FORMER DEPUTY HEADTEACHERS ============
+  const formerDeputies = [
+    { name: 'Mr. Kateregga Benedict', role: 'Former Deputy Headteacher' },
+    { name: 'Mrs. Samanya Muluuta', role: 'Former Deputy Headteacher' },
+    { name: 'Mr. Lwegaba Emmanuel', role: 'Former Deputy Headteacher' },
+    { name: 'Mr. Ssewanyana Mathias', role: 'Former Deputy Headteacher' },
+  ]
+
+  // ============ TEACHING STAFF (from Sept 23 images) ============
   const staff = [
     { name: 'Staff Member', role: 'Teaching Staff', image: '/images/WhatsApp Image 2026-09-23 at 1.01.14 PM.jpeg' },
     { name: 'Staff Member', role: 'Teaching Staff', image: '/images/WhatsApp Image 2026-09-23 at 1.01.44 PM.jpeg' },
@@ -64,13 +76,6 @@ export default function LeadershipPage() {
     { name: 'Staff Member', role: 'Teaching Staff', image: '/images/WhatsApp Image 2026-09-23 at 1.02.30 PM.jpeg' },
     { name: 'Staff Member', role: 'Teaching Staff', image: '/images/WhatsApp Image 2026-09-23 at 1.02.32 PM (1).jpeg' },
   ]
-
-  const allTeam = [
-    ...administration.map(p => ({ ...p, category: 'administration' as const })),
-    ...staff.map(p => ({ ...p, category: 'staff' as const })),
-  ]
-
-  const filteredTeam = activeFilter === 'all' ? allTeam : allTeam.filter(p => p.category === activeFilter)
 
   const schoolInfo = {
     name: 'St. Kalooli Lwanga SS Mulajje',
@@ -148,7 +153,10 @@ export default function LeadershipPage() {
 
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
-              <Crown size={13} className="text-[#e7bd5f]" /> {administration.length} Administrators
+              <Crown size={13} className="text-[#e7bd5f]" /> {currentLeadership.length} Current Leaders
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
+              <History size={13} className="text-[#e7bd5f]" /> {formerHeadteachers.length} Past Headteachers
             </div>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-xs text-white/80">
               <Users size={13} className="text-[#e7bd5f]" /> {staff.length} Teaching Staff
@@ -160,10 +168,10 @@ export default function LeadershipPage() {
       {/* Filter tabs */}
       <section className="max-w-7xl mx-auto px-6 pb-8">
         <div className="flex justify-center">
-          <div className="inline-flex gap-2 p-1.5 bg-white/5 backdrop-blur-md rounded-full border border-white/10">
+          <div className="inline-flex gap-2 p-1.5 bg-white/5 backdrop-blur-md rounded-full border border-white/10 flex-wrap">
             {([
-              { key: 'all', label: 'All Team', count: allTeam.length },
-              { key: 'administration', label: 'Administration', count: administration.length },
+              { key: 'current', label: 'Current Leadership', count: currentLeadership.length },
+              { key: 'former', label: 'Former Leaders', count: formerHeadteachers.length + formerDeputies.length },
               { key: 'staff', label: 'Teaching Staff', count: staff.length },
             ] as const).map((tab) => (
               <button
@@ -187,16 +195,16 @@ export default function LeadershipPage() {
         </div>
       </section>
 
-      {/* ADMINISTRATION — Featured layout */}
-      {(activeFilter === 'all' || activeFilter === 'administration') && (
+      {/* ============ CURRENT LEADERSHIP ============ */}
+      {activeFilter === 'current' && (
         <section className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex items-center gap-3 mb-8">
             <Crown size={22} className="text-[#e7bd5f]" />
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold">Administration</h2>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold">Current Leadership</h2>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            {administration.map((person, i) => (
+            {currentLeadership.map((person, i) => (
               <div
                 key={i}
                 className={`group relative rounded-3xl overflow-hidden bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl hover:border-[#e7bd5f]/40 transition-all duration-300 hover:-translate-y-1 ${
@@ -230,7 +238,7 @@ export default function LeadershipPage() {
                       </p>
                       <div className="flex items-center gap-3">
                         <span className="inline-flex items-center gap-1.5 text-xs text-[#e7bd5f]">
-                          <ShieldCheck size={13} /> Serving since leadership tenure
+                          <ShieldCheck size={13} /> Serving the school community
                         </span>
                       </div>
                     </div>
@@ -269,8 +277,69 @@ export default function LeadershipPage() {
         </section>
       )}
 
-      {/* TEACHING STAFF */}
-      {(activeFilter === 'all' || activeFilter === 'staff') && (
+      {/* ============ FORMER LEADERS ============ */}
+      {activeFilter === 'former' && (
+        <section className="max-w-7xl mx-auto px-6 py-12 space-y-12">
+          {/* Former Headteachers */}
+          <div>
+            <div className="flex items-center gap-3 mb-8">
+              <History size={22} className="text-[#e7bd5f]" />
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold">Former Headteachers</h2>
+            </div>
+
+            <div className="rounded-3xl bg-white/5 backdrop-blur-md border border-white/10 p-6 lg:p-10 shadow-2xl">
+              <div className="space-y-3">
+                {formerHeadteachers.map((person, i) => (
+                  <div
+                    key={i}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-[#e7bd5f]/30 transition-all"
+                  >
+                    <div className="flex size-10 items-center justify-center rounded-full bg-[#bd703f]/20 text-[#e7bd5f] font-bold shrink-0 text-sm">
+                      {i + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-serif text-lg font-bold text-white">{person.name}</h3>
+                      <p className="text-xs font-semibold uppercase tracking-wider text-[#e7bd5f] mt-1">
+                        {person.role}{person.years ? ` · ${person.years}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Former Deputy Headteachers */}
+          <div>
+            <div className="flex items-center gap-3 mb-8">
+              <UserCheck size={22} className="text-[#e7bd5f]" />
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold">Former Deputy Headteachers</h2>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {formerDeputies.map((person, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-4 p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#e7bd5f]/30 transition-all"
+                >
+                  <div className="flex size-10 items-center justify-center rounded-full bg-[#142f4a] text-[#e7bd5f] font-bold shrink-0 text-sm">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-serif text-base font-bold text-white">{person.name}</h3>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#e7bd5f] mt-1">
+                      {person.role}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ============ TEACHING STAFF ============ */}
+      {activeFilter === 'staff' && (
         <section className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex items-center gap-3 mb-8">
             <Users size={22} className="text-[#e7bd5f]" />
