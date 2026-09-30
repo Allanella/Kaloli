@@ -7,7 +7,7 @@ import {
   ChevronRight, Heart, ShieldCheck, Music, Menu, X, HandHeart, Laptop, Globe, Trophy,
   Palette, Flag, Star, BookMarked, CheckCircle2, Languages, FlaskConical, Calculator,
   User, Calendar, Home, FileText, Send, Check, Cross, Quote, Flame, Crown,
-  HeartPulse, Download
+  HeartPulse, Download, MessageSquare, AlertCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -18,6 +18,7 @@ export default function LandingPage() {
   const [badgeLoaded, setBadgeLoaded] = useState(false)
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [donorSubmitted, setDonorSubmitted] = useState(false)
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
 
   // Admissions: O'Level vs A'Level
   const [applicantType, setApplicantType] = useState<'olevel' | 'alevel'>('olevel')
@@ -51,6 +52,12 @@ export default function LandingPage() {
   // ============ DONOR FORM STATE ============
   const [donorData, setDonorData] = useState({
     donorName: '', donorContact: '', donorCountry: '', donorAddress: '', donorAmount: '', donorMessage: '',
+  })
+
+  // ============ FEEDBACK / CONTACT FORM STATE ============
+  const [feedbackData, setFeedbackData] = useState({
+    name: '', gender: '', contact: '', email: '',
+    inquiryType: '', subject: '', message: '',
   })
 
   const badgeSource = '/images/school-badge.png'
@@ -104,6 +111,12 @@ export default function LandingPage() {
 
   const handleDonorChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setDonorData({ ...donorData, [e.target.name]: e.target.value })
+  }
+
+  const handleFeedbackChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setFeedbackData({ ...feedbackData, [e.target.name]: e.target.value })
   }
 
   const handleOlevelSubmit = (e: React.FormEvent) => {
@@ -217,6 +230,23 @@ export default function LandingPage() {
     setTimeout(() => setDonorSubmitted(false), 8000)
   }
 
+  const handleFeedbackSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const message =
+      `*NEW INQUIRY / FEEDBACK*\n\n` +
+      `*Name:* ${feedbackData.name}\n` +
+      `*Gender:* ${feedbackData.gender}\n` +
+      `*Contact:* ${feedbackData.contact}\n` +
+      `*Email:* ${feedbackData.email || 'N/A'}\n\n` +
+      `*Inquiry Type:* ${feedbackData.inquiryType}\n` +
+      `*Subject:* ${feedbackData.subject || 'N/A'}\n\n` +
+      `*Message:*\n${feedbackData.message}`
+
+    window.open(`https://wa.me/256779268469?text=${encodeURIComponent(message)}`, '_blank')
+    setFeedbackSubmitted(true)
+    setTimeout(() => setFeedbackSubmitted(false), 8000)
+  }
+
   const stats = [
     { label: 'Year Founded', value: '1986', icon: Award },
     { label: 'Government Aided', value: '2011', icon: ShieldCheck },
@@ -303,7 +333,7 @@ export default function LandingPage() {
     { name: 'Downloads', href: '/downloads' },
     { name: 'Gallery', href: '/gallery' },
     { name: 'Leadership', href: '/leadership' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Contact', href: '#feedback' },
   ]
 
   const schoolInfo = {
@@ -1556,6 +1586,167 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ============ FEEDBACK / CONTACT FORM ============ */}
+        <section className="max-w-4xl mx-auto px-6 py-16" id="feedback">
+          <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-[#e7bd5f]">Get in Touch</p>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white drop-shadow-lg">
+              Inquiry & Feedback Form
+            </h2>
+            <p className="text-slate-100 text-sm sm:text-base drop-shadow">
+              Kindly fill this form for any inquiry or feedback. We'll get back to you shortly.
+            </p>
+          </div>
+
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-white/40 shadow-2xl p-6 md:p-10">
+            {feedbackSubmitted ? (
+              <div className="text-center py-12">
+                <div className="size-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+                  <Check size={40} className="text-green-600" />
+                </div>
+                <h3 className="font-serif text-2xl font-bold text-[#142f4a] mb-3">
+                  Thank You for Reaching Out!
+                </h3>
+                <p className="text-slate-600 mb-6 max-w-md mx-auto">
+                  Your message is opening in WhatsApp. Please send it to complete your submission. We'll respond as soon as possible.
+                </p>
+                <button
+                  onClick={() => setFeedbackSubmitted(false)}
+                  className="inline-flex items-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-6 py-3 font-semibold transition-all"
+                >
+                  Send Another Message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleFeedbackSubmit} className="space-y-6">
+                {/* Personal Info */}
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <User size={18} className="text-[#bd703f]" /> Your Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Full Name *</label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={feedbackData.name}
+                        onChange={handleFeedbackChange}
+                        required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="e.g., John Doe"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Gender *</label>
+                      <select
+                        name="gender"
+                        value={feedbackData.gender}
+                        onChange={handleFeedbackChange}
+                        required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm bg-white"
+                      >
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Contact (Phone) *</label>
+                      <input
+                        type="tel"
+                        name="contact"
+                        value={feedbackData.contact}
+                        onChange={handleFeedbackChange}
+                        required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="+256 7XX XXX XXX"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Email Address</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={feedbackData.email}
+                        onChange={handleFeedbackChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="email@example.com"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Inquiry Details */}
+                <div className="pt-6 border-t border-slate-200">
+                  <h3 className="font-serif text-lg font-bold text-[#142f4a] mb-4 flex items-center gap-2">
+                    <MessageSquare size={18} className="text-[#bd703f]" /> Your Inquiry
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Type of Information *</label>
+                      <select
+                        name="inquiryType"
+                        value={feedbackData.inquiryType}
+                        onChange={handleFeedbackChange}
+                        required
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm bg-white"
+                      >
+                        <option value="">Select type</option>
+                        <option value="General">General Inquiry</option>
+                        <option value="Admission">Admission</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Advice">Advice</option>
+                        <option value="Feedback">Feedback</option>
+                        <option value="Complaint">Complaint</option>
+                        <option value="Donation">Donation / Sponsorship</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Subject</label>
+                      <input
+                        type="text"
+                        name="subject"
+                        value={feedbackData.subject}
+                        onChange={handleFeedbackChange}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm"
+                        placeholder="Brief subject of your message"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-semibold text-slate-700 mb-1.5">Your Message *</label>
+                      <textarea
+                        name="message"
+                        value={feedbackData.message}
+                        onChange={handleFeedbackChange}
+                        required
+                        rows={5}
+                        className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-[#bd703f] focus:ring-2 focus:ring-[#bd703f]/20 outline-none transition text-sm resize-none"
+                        placeholder="Please describe your inquiry or feedback in detail..."
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Submit */}
+                <div className="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <p className="text-xs text-slate-500 text-center sm:text-left flex items-start gap-2">
+                    <AlertCircle size={14} className="text-[#bd703f] shrink-0 mt-0.5" />
+                    Your information is sent securely to the school via WhatsApp. We respect your privacy.
+                  </p>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center gap-2 bg-[#bd703f] hover:bg-[#a65c4b] text-white rounded-full px-8 py-3.5 font-semibold shadow-lg shadow-[#bd703f]/25 transition-all hover:-translate-y-0.5 whitespace-nowrap"
+                  >
+                    <Send size={16} /> Submit
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </section>
+
         {/* ============ CTA ============ */}
         <section className="max-w-5xl mx-auto px-6 py-16 text-center space-y-6">
           <h2 className="text-3xl sm:text-5xl font-serif font-bold text-white drop-shadow-lg">Ready to Join Our Community?</h2>
@@ -1612,6 +1803,7 @@ export default function LandingPage() {
                 <li><Link href="/academics" className="hover:text-white transition">Academics & Curriculum</Link></li>
                 <li><Link href="/gallery" className="hover:text-white transition">Photo Gallery</Link></li>
                 <li><Link href="/leadership" className="hover:text-white transition">School Leadership</Link></li>
+                <li><Link href="#feedback" className="hover:text-white transition">Inquiry & Feedback</Link></li>
                 <li><Link href="#support" className="hover:text-white transition">Support / Donate</Link></li>
               </ul>
             </div>
